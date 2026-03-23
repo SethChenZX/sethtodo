@@ -14,7 +14,7 @@ router.post('/verify', async (req, res) => {
     let user = await User.findOne({ firebaseUid });
     
     if (!user) {
-      user = new User({ firebaseUid, email, role: role || 'normal' });
+      user = new User({ firebaseUid, email, role: null });
       await user.save();
     }
 

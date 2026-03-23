@@ -45,20 +45,17 @@ export const AuthProvider = ({ children }) => {
       const token = await firebaseUser.getIdToken();
       localStorage.setItem('firebase_token', token);
 
+      console.log('Calling userApi.verify...');
       const result = await userApi.verify(firebaseUser.uid, firebaseUser.email);
-      let dbUser = result.user;
+      console.log('verify result:', result);
       
-      if (!dbUser) {
-        await userApi.verify(firebaseUser.uid, firebaseUser.email, 'normal');
-        const newResult = await userApi.verify(firebaseUser.uid, firebaseUser.email);
-        dbUser = newResult.user;
-      }
+      const dbUser = result.user;
 
       const finalUser = { 
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         displayName: firebaseUser.displayName || dbUser?.displayName || firebaseUser.email.split('@')[0],
-        role: dbUser?.role || null,
+        role: dbUser?.role,
         token,
         getIdToken: () => firebaseUser.getIdToken()
       };

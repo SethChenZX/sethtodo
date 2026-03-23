@@ -7,6 +7,10 @@ export const userApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firebaseUid, email, role })
     });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || 'API error');
+    }
     return res.json();
   },
 
@@ -17,6 +21,10 @@ export const userApi = {
         'Content-Type': 'application/json'
       }
     });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || 'API error');
+    }
     return res.json();
   },
 
@@ -29,6 +37,10 @@ export const userApi = {
       },
       body: JSON.stringify({ firebaseUid, role })
     });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || 'API error');
+    }
     return res.json();
   }
 };

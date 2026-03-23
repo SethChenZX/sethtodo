@@ -48,6 +48,8 @@ const Login = () => {
         setError('パスワードが正しくありません');
       } else if (err.code === 'auth/invalid-email') {
         setError('無効なメールアドレスです');
+      } else if (err.message) {
+        setError(err.message);
       } else {
         setError('ログインに失敗しました');
       }
@@ -85,6 +87,8 @@ const Login = () => {
         setError('このメールアドレスは既に使用されています');
       } else if (err.code === 'auth/weak-password') {
         setError('パスワードが弱すぎます');
+      } else if (err.message) {
+        setError(err.message);
       } else {
         setError('登録に失敗しました');
       }
