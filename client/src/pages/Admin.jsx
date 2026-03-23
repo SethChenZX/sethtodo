@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { todoCollection, userCollection, dataApi } from '../utils/mongodb';
+import { adminApi } from '../utils/todoApi';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -52,14 +52,15 @@ const Admin = () => {
 
   const fetchAllTodos = async () => {
     try {
-      let allTodos = await todoCollection.findAll();
+      const token = await user.getIdToken();
+      let allTodos = await adminApi.getAllTodos(token);
       
-      const allUsers = await userCollection.findAll();
+      const allUsers = await adminApi.getAllUsers(token);
       setUsers(allUsers);
       
       const userMap = {};
       allUsers.forEach(u => {
-        const uid = typeof u._id === 'object' ? u._id.$oid : u._id;
+        const uid = u._id || u.firebaseUid;
         userMap[uid] = u;
       });
       
@@ -80,7 +81,8 @@ const Admin = () => {
 
   const deleteTodo = async (id) => {
     try {
-      await todoCollection.delete(id);
+      const token = await user.getIdToken();
+      await adminApi.deleteTodo(id, token);
       fetchAllTodos();
     } catch (error) {
       console.error('Error deleting todo:', error);
@@ -89,7 +91,8 @@ const Admin = () => {
 
   const restoreTodo = async (id) => {
     try {
-      await todoCollection.restore(id);
+      const token = await user.getIdToken();
+      await adminApi.restoreTodo(id, token);
       fetchAllTodos();
     } catch (error) {
       console.error('Error restoring todo:', error);

@@ -40,4 +40,34 @@ router.get('/me', async (req, res) => {
   }
 });
 
+router.put('/role', async (req, res) => {
+  try {
+    const { firebaseUid, role } = req.body;
+    
+    if (!firebaseUid || !role) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
+    const user = await User.findOneAndUpdate(
+      { firebaseUid },
+      { role },
+      { new: true }
+    );
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ 
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

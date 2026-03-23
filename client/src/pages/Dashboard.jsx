@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { todoCollection, userCollection } from '../utils/mongodb';
+import { todoApi } from '../utils/todoApi';
+import { userApi } from '../utils/userApi';
 import { requestNotificationPermission, showBrowserNotification, shouldShowReminder } from '../utils/notifications';
 
 const formatDate = (dateString) => {
@@ -52,7 +53,6 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
-  const [dbUserId, setDbUserId] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [filter, setFilter] = useState('all');
@@ -67,22 +67,14 @@ const Dashboard = () => {
 
   const fetchTodos = async () => {
     try {
-      let userData = await userCollection.findByFirebaseUid(user.uid);
-      if (!userData) {
-        userData = await userCollection.create({
-          firebaseUid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          role: null
-        });
-        userData = await userCollection.findByFirebaseUid(user.uid);
-      }
+      const token = await user.getIdToken();
+      const userData = await userApi.getMe(user.uid, token);
       
-      if (userData?._id?.$oid) {
-        setDbUserId(userData._id.$oid);
-      }
-
-      let userTodos = await todoCollection.findByUserId(userData?._id?.$oid || user.uid);
+      let userTodos = await todoApi.getAll(token);
+      userTodos = userTodos.filter(t => {
+        const todoUserId = typeof t.userId === 'object' ? t.userId._id || t.userId.$oid : t.userId;
+        return todoUserId === user.uid || todoUserId === userData._id;
+      });
       
       userTodos = checkAndRestoreDelays(userTodos);
       userTodos = checkAndMarkOverdue(userTodos);
@@ -108,7 +100,8 @@ const Dashboard = () => {
         });
         
         const todoId = typeof todo._id === 'object' ? todo._id.$oid : todo._id;
-        await todoCollection.update(todoId, { reminderSent: true });
+        const token = await user.getIdToken();
+        await todoApi.update(todoId, { reminderSent: true }, token);
         break;
       }
     }
@@ -131,13 +124,13 @@ const Dashboard = () => {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
 
-    await todoCollection.create({
-      userId: dbUserId || user.uid,
+    const token = await user.getIdToken();
+    await todoApi.create({
       title,
       description,
       status: 'pending',
       deadline: today.toISOString()
-    });
+    }, token);
     
     setTitle('');
     setDescription('');
@@ -153,10 +146,11 @@ const Dashboard = () => {
   const handleDateSubmit = async () => {
     if (!selectedTodoId || !completedDate) return;
 
-    await todoCollection.update(selectedTodoId, {
+    const token = await user.getIdToken();
+    await todoApi.update(selectedTodoId, {
       status: 'completed',
       completedAt: new Date(completedDate).toISOString()
-    });
+    }, token);
     
     setShowDatePicker(false);
     setSelectedTodoId(null);
@@ -178,11 +172,12 @@ const Dashboard = () => {
   const handleDelaySubmit = async (days) => {
     if (!selectedDelayTodoId) return;
 
-    await todoCollection.update(selectedDelayTodoId, {
+    const token = await user.getIdToken();
+    await todoApi.update(selectedDelayTodoId, {
       status: 'delayed',
       delayDays: days,
       delayedAt: new Date().toISOString()
-    });
+    }, token);
     
     setShowDelayPicker(false);
     setSelectedDelayTodoId(null);
@@ -195,7 +190,8 @@ const Dashboard = () => {
   };
 
   const updateTodo = async (id, status) => {
-    await todoCollection.update(id, { status });
+    const token = await user.getIdToken();
+    await todoApi.update(id, { status }, token);
     fetchTodos();
   };
 

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth as firebaseAuth } from '../firebase';
-import { userCollection } from '../utils/mongodb';
+import { userApi } from '../utils/userApi';
 
 const AuthContext = createContext();
 
@@ -45,16 +45,13 @@ export const AuthProvider = ({ children }) => {
       const token = await firebaseUser.getIdToken();
       localStorage.setItem('firebase_token', token);
 
-      let dbUser = await userCollection.findByFirebaseUid(firebaseUser.uid);
+      const result = await userApi.verify(firebaseUser.uid, firebaseUser.email);
+      let dbUser = result.user;
       
       if (!dbUser) {
-        await userCollection.create({
-          firebaseUid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName || firebaseUser.email.split('@')[0],
-          role: null
-        });
-        dbUser = await userCollection.findByFirebaseUid(firebaseUser.uid);
+        await userApi.verify(firebaseUser.uid, firebaseUser.email, 'normal');
+        const newResult = await userApi.verify(firebaseUser.uid, firebaseUser.email);
+        dbUser = newResult.user;
       }
 
       const finalUser = { 
@@ -83,7 +80,8 @@ export const AuthProvider = ({ children }) => {
     if (!user) return;
     
     try {
-      await userCollection.update(user.uid, { role });
+      const token = localStorage.getItem('firebase_token');
+      await userApi.updateRole(user.uid, role, token);
       const updatedUser = { ...user, role };
       setUser(updatedUser);
       return true;
