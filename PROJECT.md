@@ -9,7 +9,8 @@
 ### 認証・ユーザー管理
 - [x] Firebase Auth（本番環境）
 - [x] Google Sign-In
-- [x] Email/Password 認証
+- [x] Email/Password 認証（メールOTP確認機能付き）
+- [x] メールOTP認証（6桁確認コード）
 - [x] ユーザー役割：Normal（通常ユーザー）とSuper（管理者）
 - [x] 初回来店時の役割選択機能
 - [x] セッションベースの認証維持
@@ -119,7 +120,19 @@ todo/
 │   └── .firebaserc              # Firebaseプロジェクト
 │
 ├── server/                        # Express バックエンド（ローカル開発用）
-│   └── ...
+│   ├── src/
+│   │   ├── models/
+│   │   │   ├── Todo.js           # Todoモデル
+│   │   │   ├── User.js           # Userモデル
+│   │   │   └── Verification.js   # OTP検証モデル
+│   │   ├── routes/
+│   │   │   ├── todos.js          # Todo CRUD
+│   │   │   ├── auth.js           # 認証・OTP管理
+│   │   │   └── admin.js          # 管理機能
+│   │   ├── utils/
+│   │   │   └── email.js          # メール送信ユーティリティ
+│   │   └── index.js              # サーバーエントリ
+│   └── package.json
 │
 ├── PROJECT_STATUS.md              # プロジェクト進行状況
 └── PROJECT.md                     # このファイル
@@ -153,6 +166,10 @@ npm install
 ```bash
 PORT=3001
 MONGODB_URI=mongodb+srv://<username>:<password>@clustertodolist.ezx6ch3.mongodb.net/?appName=ClusterTodolist
+
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+EMAIL_FROM=onboarding@resend.dev
+OTP_EXPIRES_MINUTES=5
 ```
 
 #### Client (.env)
@@ -226,6 +243,83 @@ sudo firewall-cmd --state
 ## APIリファレンス
 
 ### 認証API
+
+#### POST /api/auth/send-otp
+OTP確認コード生成・メール送信
+
+**Request Body**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "確認コードをメールに送信しました",
+  "expiresIn": 300
+}
+```
+
+**エラーコード**
+- 400: 無効なメールアドレス
+
+---
+
+#### POST /api/auth/verify-otp
+OTP確認コード検証
+
+**Request Body**
+```json
+{
+  "email": "user@example.com",
+  "otp": "123456"
+}
+```
+
+**Response (成功)**
+```json
+{
+  "success": true,
+  "isVerified": true,
+  "message": "メールアドレスの確認が完了しました"
+}
+```
+
+**Response (失敗)**
+```json
+{
+  "error": "確認コードが正しくありません（残り4回）",
+  "isVerified": false,
+  "remainingAttempts": 4
+}
+```
+
+**エラーコード**
+- 400: コード期限切れ / 入力回数上限超過 / コード不正
+
+---
+
+#### POST /api/auth/check-verified
+メールアドレス確認状態チェック
+
+**Request Body**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response**
+```json
+{
+  "isVerified": true
+}
+```
+
+---
 
 #### POST /api/auth/verify
 トークン検証とユーザー作成/更新
@@ -402,6 +496,21 @@ Todo更新
 }
 ```
 
+### Verification Schema (OTP管理)
+
+```javascript
+{
+  email: String,            // メールアドレス（小文字化）
+  otp: String,             // 6桁OTPコード
+  expiresAt: Date,         // 有効期限（5分後）
+  attempts: Number,        // 試行回数（最大5回）
+  verified: Boolean,       // 確認済みフラグ
+  createdAt: Date          // 作成日時
+}
+```
+
+※ `expiresAt` フィールドにTTLインデックス設定（自動期限切れ）
+
 ---
 
 ## ステータス一覧
@@ -453,7 +562,21 @@ node migrations/remove-time-fields.js
 ### 本番環境
 Firebase Auth（実装済み）
 - Google Sign-In
-- Email/Password 認証
+- Email/Password 認証（メールOTP確認付き）
+
+### メールOTP認証
+新規登録時にメールアドレスの確認を行う6桁の確認コード方式
+
+**メール送信サービス: Resend**
+- APIベースで簡単設定
+- 每月3,000通無料
+- 日本語メール対応
+
+**OTP仕様**
+- 桁数: 6桁
+- 有効時間: 5分
+- 試行回数上限: 5回
+- 送信間隔制限: 60秒
 
 ### 役割管理
 MongoDB（roleフィールド）
@@ -514,6 +637,14 @@ Access-Control-Allow-Origin error
 ### 通知が届かない
 - ブラウザ通知の許可確認
 - インカバーグوروーモードではないことを確認
+
+### メール送信エラー
+```
+Error: Invalid login
+```
+- SMTP設定確認（SMTP_USER, SMTP_PASS）
+- アプリパスワードの設定（Gmailの場合）
+- アカウントのセキュリティ設定確認
 
 ---
 
