@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         displayName: firebaseUser.displayName || dbUser?.displayName || firebaseUser.email.split('@')[0],
-        role: dbUser?.role,
+        role: dbUser?.role ?? null,
         token,
         getIdToken: () => firebaseUser.getIdToken()
       };

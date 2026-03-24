@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" />;
-  if (user.role === null) return <Navigate to="/select-role" />;
+  if (!user.role) return <Navigate to="/select-role" />;
   if (user.role === 'super') return <Navigate to="/admin" />;
   return children;
 };
@@ -18,7 +18,7 @@ const SuperUserRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" />;
-  if (user.role === null) return <Navigate to="/select-role" />;
+  if (!user.role) return <Navigate to="/select-role" />;
   if (user.role !== 'super') return <Navigate to="/" />;
   return children;
 };
@@ -27,7 +27,7 @@ const SelectRoleRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" />;
-  if (user.role !== null) return <Navigate to="/" />;
+  if (user.role) return <Navigate to="/" />;
   return children;
 };
 

@@ -24,7 +24,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      if (user.role === null) {
+      if (user.role === null || user.role === undefined) {
         navigate('/select-role');
       } else {
         navigate(user.role === 'super' ? '/admin' : '/');
