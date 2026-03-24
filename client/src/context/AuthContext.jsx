@@ -48,8 +48,6 @@ export const AuthProvider = ({ children }) => {
       console.log('Calling userApi.verify...');
       const result = await userApi.verify(firebaseUser.uid, firebaseUser.email);
       console.log('verify result:', result);
-      console.log('dbUser.role:', result.user?.role);
-      console.log('dbUser:', JSON.stringify(result.user));
       
       const dbUser = result.user;
 
