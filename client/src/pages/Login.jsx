@@ -23,10 +23,14 @@ const Login = () => {
   const [localLoading, setLocalLoading] = useState(false);
 
   useEffect(() => {
+    console.log('Login.jsx useEffect - user:', user);
     if (user) {
+      console.log('Login.jsx - user.role:', user.role);
       if (user.role === null || user.role === undefined) {
+        console.log('Login.jsx - navigating to /select-role');
         navigate('/select-role');
       } else {
+        console.log('Login.jsx - navigating to:', user.role === 'super' ? '/admin' : '/');
         navigate(user.role === 'super' ? '/admin' : '/');
       }
     }
