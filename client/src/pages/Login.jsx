@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../firebase';
@@ -9,7 +9,6 @@ import {
   signInWithPopup,
   updateProfile
 } from 'firebase/auth';
-import { authApi } from '../utils/api';
 
 const Login = () => {
   const { loginWithFirebase, loginWithGoogle, loading, user } = useAuth();
@@ -23,14 +22,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const [localLoading, setLocalLoading] = useState(false);
 
-  const [step, setStep] = useState('credentials');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [otpError, setOtpError] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const [remainingAttempts, setRemainingAttempts] = useState(null);
-  const otpInputs = useRef([]);
-
   useEffect(() => {
     if (user) {
       if (user.role === null || user.role === undefined) {
@@ -40,129 +31,6 @@ const Login = () => {
       }
     }
   }, [user, navigate]);
-
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [countdown]);
-
-  const handleSendOtp = async (e) => {
-    if (e) e.preventDefault();
-    setError('');
-    setLocalLoading(true);
-
-    try {
-      await authApi.sendOtp(email);
-      setOtpSent(true);
-      setStep('otp');
-      setCountdown(60);
-      setOtpError('');
-    } catch (err) {
-      setError(err.message || '確認コードの送信に失敗しました');
-    } finally {
-      setLocalLoading(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    if (countdown > 0) return;
-    await handleSendOtp();
-  };
-
-  const handleOtpChange = (index, value) => {
-    if (value.length > 1) {
-      const digits = value.replace(/\D/g, '').slice(0, 6 - index).split('');
-      const newOtp = [...otp];
-      digits.forEach((digit, i) => {
-        if (index + i < 6) {
-          newOtp[index + i] = digit;
-        }
-      });
-      setOtp(newOtp);
-      const nextIndex = Math.min(index + digits.length, 5);
-      otpInputs.current[nextIndex]?.focus();
-      if (index + digits.length >= 6) {
-        otpInputs.current[5]?.select();
-      }
-      return;
-    }
-
-    const digit = value.replace(/\D/g, '');
-    const newOtp = [...otp];
-    newOtp[index] = digit.slice(-1);
-    setOtp(newOtp);
-
-    if (digit && index < 5) {
-      otpInputs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      otpInputs.current[index - 1]?.focus();
-    }
-  };
-
-  const handleOtpPaste = (e) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    const newOtp = [...otp];
-    pastedData.split('').forEach((char, i) => {
-      if (i < 6) newOtp[i] = char;
-    });
-    setOtp(newOtp);
-    const lastFilledIndex = Math.min(pastedData.length - 1, 5);
-    otpInputs.current[lastFilledIndex]?.focus();
-    if (pastedData.length >= 6) {
-      otpInputs.current[5]?.select();
-    }
-  };
-
-  const handleVerifyOtp = async (e) => {
-    if (e) e.preventDefault();
-    setOtpError('');
-    setLocalLoading(true);
-
-    const otpCode = otp.join('');
-
-    if (otpCode.length !== 6) {
-      setOtpError('6桁の確認コードを入力してください');
-      setLocalLoading(false);
-      return;
-    }
-
-    try {
-      const result = await authApi.verifyOtp(email, otpCode);
-      
-      if (result.isVerified) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        if (displayName) {
-          await updateProfile(userCredential.user, { displayName });
-        }
-        await loginWithFirebase(userCredential.user);
-      }
-    } catch (err) {
-      if (err.data) {
-        setOtpError(err.data.error || '確認コードが正しくありません');
-        if (err.data.remainingAttempts !== undefined) {
-          setRemainingAttempts(err.data.remainingAttempts);
-        }
-        if (err.data.expired) {
-          setOtp(['', '', '', '', '', '']);
-          setStep('credentials');
-          setOtpSent(false);
-          setOtpError('');
-          setError('確認コードの有効期限が切れました。再度お試しください。');
-        }
-      } else {
-        setOtpError(err.message || '確認に失敗しました');
-      }
-    } finally {
-      setLocalLoading(false);
-    }
-  };
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
@@ -192,27 +60,43 @@ const Login = () => {
     }
   };
 
-  const handleEmailSignupSubmit = async (e) => {
+  const handleEmailSignup = async (e) => {
     e.preventDefault();
     setError('');
+    setLocalLoading(true);
 
     if (password !== confirmPassword) {
       setError('パスワードが一致しません');
+      setLocalLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError('パスワードは6文字以上必要です');
+      setLocalLoading(false);
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('有効なメールアドレスを入力してください');
-      return;
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      if (displayName) {
+        await updateProfile(result.user, { displayName });
+      }
+      await loginWithFirebase(result.user);
+    } catch (err) {
+      console.error('Signup error:', err);
+      if (err.code === 'auth/email-already-in-use') {
+        setError('このメールアドレスは既に使用されています');
+      } else if (err.code === 'auth/weak-password') {
+        setError('パスワードが弱すぎます');
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('登録に失敗しました');
+      }
+    } finally {
+      setLocalLoading(false);
     }
-
-    await handleSendOtp();
   };
 
   const handleGoogleLogin = async () => {
@@ -230,120 +114,6 @@ const Login = () => {
       setLocalLoading(false);
     }
   };
-
-  const handleBackToCredentials = () => {
-    setStep('credentials');
-    setOtpSent(false);
-    setOtp(['', '', '', '', '', '']);
-    setOtpError('');
-    setError('');
-    setRemainingAttempts(null);
-  };
-
-  const maskEmail = (email) => {
-    const [local, domain] = email.split('@');
-    if (local.length <= 3) {
-      return `${local[0]}***@${domain}`;
-    }
-    return `${local.slice(0, 3)}***@${domain}`;
-  };
-
-  if (step === 'otp' && otpSent) {
-    return (
-      <div className="login-container">
-        <button
-          onClick={handleBackToCredentials}
-          style={{
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            background: 'none',
-            border: 'none',
-            color: '#6b46c1',
-            cursor: 'pointer',
-            fontSize: '14px'
-          }}
-        >
-          ← 戻る
-        </button>
-
-        <h2 style={{ marginBottom: '10px' }}>メールアドレスを確認</h2>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          {maskEmail(email)} に確認コードを送信しました
-        </p>
-
-        <form onSubmit={handleVerifyOtp}>
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '20px' }}>
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => (otpInputs.current[index] = el)}
-                type="text"
-                inputMode="numeric"
-                maxLength={7}
-                value={digit}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                onPaste={handleOtpPaste}
-                autoFocus={index === 0}
-                style={{
-                  width: '48px',
-                  height: '56px',
-                  textAlign: 'center',
-                  fontSize: '24px',
-                  fontWeight: 'bold',
-                  border: `2px solid ${otpError ? '#dc2626' : '#ddd'}`,
-                  borderRadius: '8px',
-                  outline: 'none'
-                }}
-              />
-            ))}
-          </div>
-
-          {otpError && (
-            <p style={{ color: '#dc2626', fontSize: '14px', marginBottom: '10px', textAlign: 'center' }}>
-              {otpError}
-              {remainingAttempts !== null && remainingAttempts > 0 && (
-                <>（残り{remainingAttempts}回）</>
-              )}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={localLoading}
-            style={{ width: '100%', maxWidth: '300px', padding: '12px', fontSize: '16px' }}
-          >
-            {localLoading ? '確認中...' : '確認'}
-          </button>
-        </form>
-
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          {countdown > 0 ? (
-            <p style={{ color: '#666', fontSize: '14px' }}>
-              {countdown}秒後に再送信可能
-            </p>
-          ) : (
-            <button
-              onClick={handleResendOtp}
-              disabled={localLoading}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#6b46c1',
-                cursor: 'pointer',
-                fontSize: '14px',
-                textDecoration: 'underline'
-              }}
-            >
-              確認コードを再送信
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="login-container">
@@ -393,7 +163,7 @@ const Login = () => {
         <div style={{ flex: 1, borderTop: '1px solid #ddd' }}></div>
       </div>
 
-      <form onSubmit={isSignUp ? handleEmailSignupSubmit : handleEmailLogin} style={{ width: '100%', maxWidth: '300px' }}>
+      <form onSubmit={isSignUp ? handleEmailSignup : handleEmailLogin} style={{ width: '100%', maxWidth: '300px' }}>
         {isSignUp && (
           <input
             type="text"
