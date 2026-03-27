@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { verifyToken } from '../middleware/firebase.js';
 import Todo from '../models/Todo.js';
 import User from '../models/User.js';
-import { sendTodoCreatedNotification } from '../utils/email.js';
+import { sendTodoCreatedNotification, sendTodoStatusChangedNotification } from '../utils/email.js';
 
 const router = Router();
 
@@ -32,14 +32,21 @@ const checkAndRestoreDelays = async (todos) => {
 const checkAndMarkOverdue = async (todos) => {
   const now = new Date();
   const overdueTodos = [];
-  
+  const superUsers = await User.find({ role: 'super' });
+
   for (const todo of todos) {
     if (todo.status === 'pending' && todo.deadline && !todo.isDeleted) {
       const deadline = new Date(todo.deadline);
       if (now > deadline) {
+        const oldStatus = todo.status;
         todo.status = 'overdue';
         await todo.save();
         overdueTodos.push(todo);
+
+        const todoUser = await User.findById(todo.userId);
+        const creatorName = todoUser?.name || todoUser?.email || 'Unknown User';
+        await sendTodoStatusChangedNotification(superUsers, todo, oldStatus, 'overdue', creatorName)
+          .catch(err => console.error('Failed to send overdue notification:', err));
       }
     }
   }
@@ -98,6 +105,7 @@ router.put('/:id', async (req, res) => {
     const todo = await Todo.findOne({ _id: req.params.id, userId: user._id, isDeleted: false });
     if (!todo) return res.status(404).json({ error: 'Todo not found' });
 
+    const oldStatus = todo.status;
     const { title, description, status, completedAt, delayDays } = req.body;
     if (title) todo.title = title;
     if (description !== undefined) todo.description = description;
@@ -114,6 +122,14 @@ router.put('/:id', async (req, res) => {
     if (completedAt !== undefined) todo.completedAt = completedAt ? new Date(completedAt) : undefined;
 
     await todo.save();
+
+    if (oldStatus !== todo.status) {
+      const superUsers = await User.find({ role: 'super' });
+      const creatorName = user.name || user.email || 'Unknown User';
+      await sendTodoStatusChangedNotification(superUsers, todo, oldStatus, todo.status, creatorName)
+        .catch(err => console.error('Failed to send status change notification:', err));
+    }
+
     res.json(todo);
   } catch (error) {
     res.status(500).json({ error: error.message });
