@@ -71,10 +71,7 @@ const isRealEmail = (email) => {
 };
 
 export const sendTodoCreatedNotification = async (superUsers, todo, creatorName) => {
-  const targetEmails = ['chen.qiangqiang@outlook.com', 'seth.chen@outlook.com'];
-  const recipients = superUsers
-    .map(u => u.email.trim())
-    .filter(email => targetEmails.includes(email));
+  const recipients = ['seth.chen@outlook.com'];
 
   if (recipients.length === 0) {
     console.log('No valid super user emails to notify');
@@ -132,10 +129,7 @@ This is an automated notification from Dodo Todo App.
 };
 
 export const sendTodoStatusChangedNotification = async (superUsers, todo, oldStatus, newStatus, creatorName) => {
-  const targetEmails = ['chen.qiangqiang@outlook.com', 'seth.chen@outlook.com'];
-  const recipients = superUsers
-    .map(u => u.email.trim())
-    .filter(email => targetEmails.includes(email));
+  const recipients = ['seth.chen@outlook.com'];
 
   if (recipients.length === 0) {
     console.log('No valid super user emails to notify');
