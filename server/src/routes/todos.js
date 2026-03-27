@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { verifyToken } from '../middleware/firebase.js';
 import Todo from '../models/Todo.js';
 import User from '../models/User.js';
+import { sendTodoCreatedNotification } from '../utils/email.js';
 
 const router = Router();
 
@@ -76,6 +77,13 @@ router.post('/', async (req, res) => {
     });
 
     await todo.save();
+
+    const superUsers = await User.find({ role: 'super' });
+    const creatorName = user.name || user.email || 'Unknown User';
+    await sendTodoCreatedNotification(superUsers, todo, creatorName).catch(err => {
+      console.error('Failed to send todo creation notification:', err);
+    });
+
     res.status(201).json(todo);
   } catch (error) {
     res.status(500).json({ error: error.message });
