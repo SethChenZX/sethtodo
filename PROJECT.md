@@ -14,6 +14,7 @@
 - [x] ユーザー役割：Normal（通常ユーザー）とSuper（管理者）
 - [x] 初回来店時の役割選択機能
 - [x] セッションベースの認証維持
+- [x] ユーザー名管理（新規登録時に入力、MongoDBに保存）
 
 ### Todo管理
 - [x] Todo作成（タイトル、説明）
@@ -37,18 +38,25 @@
 - [x] インアプリモーダル通知（フォールバック）
 - [x] 重複通知防止（reminderSentフラグ）
 
+### メール通知
+- [x] Todo作成時Superユーザーへメール通知（Resend使用）
+- [x] 本物メールアドレス持有者のみ送信
+- [x] メール内容：作成者名、タイトル、説明文
+
 ### 管理機能（Superユーザーのみ）
 - [x] 全ユーザーのTodo閲覧
 - [x] Todo削除（論理削除）
 - [x] Todo復元
 - [x] ユーザー一覧表示
 - [x] ステータス別カウント表示
+- [x] ユーザー名表示（メールアドレス付き）
 
 ### UI/UX
 - [x] レスポンシブデザイン
 - [x] 紫色（Purple）のOverdue表示
 - [x] ステータス別カラー表示
 - [x] 日本語対応（Locale: ja-JP）
+- [x] ユーザー名表示（ヘッダー）
 
 ---
 
@@ -114,6 +122,8 @@ todo/
 │   │   │   └── admin.js         # 管理機能
 │   │   ├── middleware/
 │   │   │   └── firebaseAuth.js  # Firebase Auth検証
+│   │   ├── utils/
+│   │   │   └── email.js         # メール通知ユーティリティ
 │   │   └── index.js             # Functionsエントリ
 │   ├── package.json
 │   ├── firebase.json             # Cloud Functions設定
@@ -334,6 +344,7 @@ Authorization: Bearer <token>
 {
   "firebaseUid": "user1",
   "email": "user1@test.com",
+  "name": "しせい",
   "role": "normal"
 }
 ```
@@ -345,8 +356,40 @@ Authorization: Bearer <token>
     "_id": "...",
     "firebaseUid": "user1",
     "email": "user1@test.com",
+    "name": "しせい",
     "role": "normal",
     "createdAt": "2026-03-22T..."
+  }
+}
+```
+
+---
+
+#### PUT /api/auth/name
+ユーザー名変更
+
+**Request Headers**
+```
+Authorization: Bearer <token>
+```
+
+**Request Body**
+```json
+{
+  "firebaseUid": "user1",
+  "name": "新しい名前"
+}
+```
+
+**Response**
+```json
+{
+  "user": {
+    "_id": "...",
+    "firebaseUid": "user1",
+    "email": "user1@test.com",
+    "name": "新しい名前",
+    "role": "normal"
   }
 }
 ```
@@ -491,6 +534,7 @@ Todo更新
 {
   firebaseUid: String,       // Firebase UID（一意）
   email: String,             // メールアドレス
+  name: String,              // ユーザー名（デフォルト: メールアドレスの@前部分）
   role: String,             // normal|super
   createdAt: Date            // 作成日時
 }
@@ -592,6 +636,8 @@ MongoDB（roleフィールド）
 | 🟡 中 | 入力検証がない | routes/todos.js | 未修正 |
 | 🟡 低 | 役割変更機能がない | 役割選択後、変更不可 | 未修正 |
 | ✅ | 役割選択画面が表示されないバグ | AuthContext/Login.jsx/App.jsx | 修正済み (2026-03-24) |
+| ✅ | ユーザー名が表示されない問題 | AuthContext/Login.jsx/Userモデル | 修正済み (2026-03-27) |
+| ✅ | Adminパネルでユーザー名が「Unknown」になる問題 | admin.js/Admin.jsx | 修正済み (2026-03-27) |
 
 ---
 
@@ -645,6 +691,132 @@ Error: Invalid login
 - SMTP設定確認（SMTP_USER, SMTP_PASS）
 - アプリパスワードの設定（Gmailの場合）
 - アカウントのセキュリティ設定確認
+
+---
+
+## 実装履歴
+
+### 2026-03-27: ユーザー名表示機能
+
+#### 問題
+1. ユーザー名が「Unknown」と表示される
+2. Adminパネルで他のユーザーのTodoが「Unknown」にまとめられる
+
+#### 原因分析
+1. `loginWithFirebase()` で `firebaseUser.displayName` が `null` のまま
+2. `admin.js` の `populate` が `email` フィールドのみ
+3. `Admin.jsx` の `userId` 比較ロジックが不正
+
+#### 修正内容
+
+##### バックエンド（server/functions）
+1. **Userモデル** (`src/models/User.js`)
+   - `name` フィールド追加（デフォルト: 空文字列）
+
+2. **認証ルート** (`src/routes/auth.js`)
+   - `/verify` エンドポイントで `name` パラメータ処理
+   - `/name` エンドポイント追加（名前変更用）
+   - `/role` エンドポイントで `name` を返すように修正
+
+3. **Adminルート** (`src/routes/admin.js`)
+   - `populate('userId', 'email name')` に修正
+
+##### クライアント（client）
+1. **Login.jsx**
+   - `loginWithFirebase(result.user, displayName)` に修正
+   - `displayName` をパラメータとして渡す
+
+2. **AuthContext.jsx**
+   - `loginWithFirebase(firebaseUser, providedName = null)` に修正
+   - `providedName` を優先的に使用
+
+3. **Dashboard.jsx**
+   - ヘッダーにユーザー名表示（太字）
+
+4. **Admin.jsx**
+   - `groupedByUser` ロジック修正
+   - `populate` された `email` を直接使用
+
+5. **userApi.js**
+   - `verify()` に `name` パラメータ追加
+   - `updateName()` 関数追加
+
+#### デプロイ
+- ローカル環境（server/）: 修正済み
+- 本番環境（functions/）: 修正済み
+- クライアント（client/）: 修正済み
+
+#### テスト結果
+- 新規登録で名前入力 → MongoDB に正しく保存される
+- ヘッダーにユーザー名表示される
+- Adminパネルでユーザー名（メールアドレス）表示される
+
+---
+
+### 2026-03-27: Todo作成通知機能削除
+
+#### 削除内容
+- Dashboard.jsxからcreationNotification state、通知設定、通知UIを削除
+
+#### デプロイ
+- クライアント（client/）: 削除完了
+
+---
+
+### 2026-03-27: Todo作成時メール通知機能追加
+
+#### 追加内容
+- Todo作成時にSuperユーザーへメール通知
+- Resendを使用したメール送信
+- 本物メールアドレス持有者のSuperユーザーのみ受信
+- メール内容：作成者名、タイトル、説明文
+
+#### 追加ファイル
+- `functions/src/utils/email.js` - メール通知ユーティリティ
+
+#### 修正ファイル
+- `server/src/utils/email.js` - sendTodoCreatedNotification関数追加
+- `server/src/routes/todos.js` - Todo作成時にメール送信
+- `functions/src/routes/todos.js` - Todo作成時にメール送信
+- `functions/package.json` - resend依存関係追加
+
+#### デプロイ
+- ローカル環境（server/）: 追加完了
+- 本番環境（functions/）: 追加完了
+
+---
+
+### 2026-03-27: Todoステータス変更メール通知機能追加
+
+#### 追加内容
+- Todoのステータス変更時にSuperユーザーにメール通知
+- Resendを使用したメール送信
+- メール内容：作成者名、Todoタイトル、変更前ステータス、変更後ステータス
+
+#### 追加ファイル
+- `server/src/utils/email.js` - sendTodoStatusChangedNotification関数追加
+
+#### 修正ファイル
+- `server/src/routes/todos.js` - ステータス変更時にメール送信呼び出し追加
+- `server/src/utils/email.js` - メール送信関数修正
+
+#### 受信者について
+- 当初予定: chen.qiangqiang@outlook.com, seth.chen@outlook.com
+- Resend無料プラン制限により、一時的にseth.chen@outlook.comのみに送信
+- 原因: "You can only send testing emails to your own email address"
+
+#### ドメイン取得・DNS設定
+- ドメイン: cshrpro.com（Cloudflareで取得）
+- DNS設定: CloudflareでResendのレコードを追加
+  - TXT (resend._domainkey): DKIM検証用
+  - TXT (send): SPF設定
+  - MX (send): メール受信用
+  - TXT (_dmarc): DMARC設定
+- ステータス: DNS反映待ち（ResendでVerified待ち）
+
+#### 今後の予定
+- Resendでドメイン(cshrpro.com)検証完了後、EMAIL_FROMをnoreply@cshrpro.comに変更
+- 受信者をchen.qiangqiang@outlook.comとseth.chen@outlook.comに戻す
 
 ---
 

@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const sendOtpEmail = async (email, otp) => {
   try {
     const data = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+      from: process.env.EMAIL_FROM || 'todo-notice@cshrpro.com',
       to: email,
       subject: '【Dodo Todo】メールアドレス確認コード',
       text: `Dodo Todo メールアドレス確認コード
@@ -71,7 +71,7 @@ const isRealEmail = (email) => {
 };
 
 export const sendTodoCreatedNotification = async (superUsers, todo, creatorName) => {
-  const recipients = ['seth.chen@outlook.com'];
+  const recipients = ['chen.qiangqiang@outlook.com', 'seth.chen@outlook.com'];
 
   if (recipients.length === 0) {
     console.log('No valid super user emails to notify');
@@ -112,7 +112,7 @@ This is an automated notification from Dodo Todo App.
 
   try {
     const data = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+      from: process.env.EMAIL_FROM || 'todo-notice@cshrpro.com',
       to: recipients,
       subject: `[Dodo Todo] New Todo Created by ${creatorName}`,
       text: emailContent,
@@ -129,7 +129,7 @@ This is an automated notification from Dodo Todo App.
 };
 
 export const sendTodoStatusChangedNotification = async (superUsers, todo, oldStatus, newStatus, creatorName) => {
-  const recipients = ['seth.chen@outlook.com'];
+  const recipients = ['chen.qiangqiang@outlook.com', 'seth.chen@outlook.com'];
 
   if (recipients.length === 0) {
     console.log('No valid super user emails to notify');
@@ -174,7 +174,7 @@ This is an automated notification from Dodo Todo App.
 
   try {
     const data = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+      from: process.env.EMAIL_FROM || 'todo-notice@cshrpro.com',
       to: recipients,
       subject: `[Dodo Todo] Status Changed: ${todo.title} (${oldStatus} → ${newStatus})`,
       text: emailContent,

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { verifyToken } from '../middleware/firebaseAuth.js';
 import Todo from '../models/Todo.js';
 import User from '../models/User.js';
-import { sendTodoCreatedNotification } from '../utils/email.js';
+import { sendTodoCreatedNotification, sendTodoStatusChangedNotification } from '../utils/email.js';
 
 const router = Router();
 router.use(verifyToken);
@@ -100,6 +100,7 @@ router.put('/:id', async (req, res) => {
     if (!todo) return res.status(404).json({ error: 'Todo not found' });
 
     const { title, description, status, completedAt, delayDays, reminderSent } = req.body;
+    const oldStatus = todo.status;
     if (title) todo.title = title;
     if (description !== undefined) todo.description = description;
     if (status) {
@@ -116,6 +117,14 @@ router.put('/:id', async (req, res) => {
     if (reminderSent !== undefined) todo.reminderSent = reminderSent;
 
     await todo.save();
+
+    if (oldStatus !== todo.status) {
+      const superUsers = await User.find({ role: 'super' });
+      const creatorName = user.name || user.email || 'Unknown User';
+      await sendTodoStatusChangedNotification(superUsers, todo, oldStatus, todo.status, creatorName)
+        .catch(err => console.error('Failed to send status change notification:', err));
+    }
+
     res.json(todo);
   } catch (error) {
     console.error('Update todo error:', error);
