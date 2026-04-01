@@ -14,7 +14,7 @@ router.get('/todos', async (req, res) => {
     }
 
     const todos = await Todo.find()
-      .populate('userId', 'email')
+      .populate('userId', 'email name')
       .sort({ createdAt: -1 });
 
     const now = new Date();

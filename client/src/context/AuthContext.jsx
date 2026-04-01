@@ -39,14 +39,16 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const loginWithFirebase = async (firebaseUser) => {
+  const loginWithFirebase = async (firebaseUser, providedName = null) => {
     setLoading(true);
     try {
       const token = await firebaseUser.getIdToken();
       localStorage.setItem('firebase_token', token);
 
-      console.log('Calling userApi.verify...');
-      const result = await userApi.verify(firebaseUser.uid, firebaseUser.email);
+      const name = providedName || firebaseUser.displayName || firebaseUser.email.split('@')[0];
+      
+      console.log('Calling userApi.verify with name:', name);
+      const result = await userApi.verify(firebaseUser.uid, firebaseUser.email, null, name);
       console.log('verify result:', result);
       
       const dbUser = result.user;
@@ -54,7 +56,7 @@ export const AuthProvider = ({ children }) => {
       const finalUser = { 
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        displayName: firebaseUser.displayName || dbUser?.displayName || firebaseUser.email.split('@')[0],
+        displayName: dbUser?.name || firebaseUser.displayName || firebaseUser.email.split('@')[0],
         role: dbUser?.role ?? null,
         token,
         getIdToken: () => firebaseUser.getIdToken()

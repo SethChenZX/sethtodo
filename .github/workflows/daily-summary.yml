@@ -1,0 +1,17 @@
+name: Daily Todo Summary
+
+on:
+  schedule:
+    - cron: '2 15 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-daily-summary:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send daily summary email
+        run: |
+          curl -X POST "${{ secrets.DAILY_SUMMARY_API_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"secret": "${{ secrets.DAILY_SUMMARY_SECRET }}"}'

@@ -142,11 +142,12 @@ const Admin = () => {
   };
 
   const groupedByUser = filteredTodos.reduce((acc, todo) => {
-    const userId = typeof todo.userId === 'object' ? todo.userId.$oid : todo.userId;
-    const userInfo = users.find(u => (u._id?.$oid || u._id) === userId);
+    const userInfo = todo.userId;
     const email = userInfo?.email || 'Unknown';
-    if (!acc[email]) acc[email] = [];
-    acc[email].push(todo);
+    const name = userInfo?.name || 'Unknown';
+    const displayName = name ? `${name} (${email})` : email;
+    if (!acc[displayName]) acc[displayName] = [];
+    acc[displayName].push(todo);
     return acc;
   }, {});
 

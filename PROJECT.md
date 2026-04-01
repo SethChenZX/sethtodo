@@ -694,6 +694,54 @@ Error: Invalid login
 
 ---
 
+### 2026-03-31: 日次サマリーメール機能追加
+
+#### 概要
+毎日23時に前日のTodo作成数、完了数、期限切れ数、延期数、放棄数、完了率をまとめたメールを管理者に送信する機能。
+
+#### 実装方式
+GitHub Actionsを使用して每日23時（日本時間）にAPIをコール
+
+#### 追加ファイル
+- `.github/workflows/daily-summary.yml` - GitHub Actions ワークフロー
+- `server/src/routes/dailySummary.js` - 日次サマリーAPIルート
+- `functions/src/routes/dailySummary.js` - Cloud Functions用ルート
+
+#### 修正ファイル
+- `server/src/utils/email.js` - sendDailySummaryEmail関数追加
+- `functions/src/utils/email.js` - sendDailySummaryEmail関数追加
+- `server/src/index.js` - dailySummaryルート登録
+- `functions/index.js` - dailySummaryルート登録
+
+#### APIエンドポイント
+| エンドポイント | メソッド | 説明 |
+|--------------|---------|------|
+| `/api/daily-summary/send` | POST | 日次サマリーメール送信 |
+
+#### メール内容
+- 作成数: 本日に作成したTodo数
+- 完了数: 本日に完了にしたTodo数
+- 期限切れ数: 本日に期限切れになったTodo数
+- 延期数: 本日に延期したTodo数
+- 放棄数: 本日に放棄にしたTodo数
+- 完了率: 完了数 / (完了数 + 期限切れ数 + 延期数 + 放棄数)
+
+#### 受信者
+- chen.qiangqiang@outlook.com
+- seth.chen@outlook.com
+
+#### GitHub Secrets設定
+```
+DAILY_SUMMARY_API_URL: https://api.example.com/api/daily-summary/send
+DAILY_SUMMARY_SECRET: <任意のシークレットキー>
+```
+
+#### Cron仕様
+- 日本時間10時30分 = UTC1時30分
+- Cron: `30 1 * * *`
+
+---
+
 ## 実装履歴
 
 ### 2026-03-27: ユーザー名表示機能
@@ -817,6 +865,183 @@ Error: Invalid login
 #### 今後の予定
 - Resendでドメイン(cshrpro.com)検証完了後、EMAIL_FROMをnoreply@cshrpro.comに変更
 - 受信者をchen.qiangqiang@outlook.comとseth.chen@outlook.comに戻す
+
+---
+
+### 2026-03-29: カスタムドメイン設定（todo.cshrpro.com）
+
+#### 問題
+Firebase Hostingにカスタムドメイン（todo.cshrpro.com）を追加後、SSL証明書が有効になる前にHTTPSアクセスでエラーが発生
+- エラー内容: `SSL: no alternative certificate subject name matches target host name`
+
+#### 原因
+FirebaseがカスタムドメインのSSL証明書をプロビジョニングするまで時間がかかった（数分〜最大24時間）
+
+#### 解決方法
+1. Firebase Console > Hosting > カスタムドメインで `todo.cshrpro.com` を追加
+2. CloudflareでDNS CNAMEレコードを設定（`todo.cshrpro.com` → `sethtodo-a6ea4.web.app`）
+3. SSL証明書の自動プロビジョニングを待機
+
+#### DNS設定内容
+- レコードタイプ: CNAME
+- 名前: todo
+- ターゲット: sethtodo-a6ea4.web.app
+- プロキシステータス: DNSのみ（Cloudflareプロキシは使用せず）
+
+#### 結果
+- DNS解決: ✅ 正常（`todo.cshrpro.com` → `sethtodo-a6ea4.web.app`）
+- SSL証明書: ✅ 有効（Firebaseにより自動プロビジョニング完了）
+- アクセスURL: https://todo.cshrpro.com
+
+
+### 2026-03-29: サブスクリプション（月額/年額）機能追加
+
+#### 概要
+有料会員制度（サブスクリプション）を導入し、サブスクリプション会員に特別な機能を提供。
+
+#### 会員プラン
+
+| プラン | 価格 | 機能 |
+|-------|------|------|
+| Free | 無料 | 基本機能 |
+| Monthly | 月額 | Todo削除 + 週間グラフ |
+| Yearly | 年額 | Todo削除 + 週間グラフ |
+
+#### 機能詳細
+
+##### 1. Todo削除機能
+- **対象者**: サブスクリプション会員（月額/年額）
+- **内容**: 自分のTodoを論理削除（isDeleted: true）できる
+- **権限フロー**:
+  - Superユーザー → 何でも削除可能
+  - サブスク会員 → 自分のTodoのみ削除可能
+  - Freeユーザー → 削除不可（403 Forbidden）
+
+##### 2. 週間グラフ
+- **対象者**: 全ユーザー
+- **内容**: 過去1週間のTodo状況を折れ線グラフで表示
+- **グラフ内容**:
+  - X軸: 過去7日間（日〜土）
+  - Y軸（左）: 各ステータスのTodo数
+  - Y軸（右）: 完了率（%）
+  - 折れ線4本: 完了数・延期数・期限切れ数・放棄数
+- **使用ライブラリ**: chart.js + react-chartjs-2
+
+#### データベース変更
+
+**Userモデル更新:**
+```javascript
+subscription: {
+  plan: { type: String, enum: [\free, \monthly, \yearly], default: \free },
+  status: { type: String, enum: [\active, \canceled, \past_due, \none], default: \none },
+  currentPeriodEnd: { type: Date },
+  stripeCustomerId: { type: String },
+  stripeSubscriptionId: { type: String }
+}
+```
+
+#### APIエンドポイント
+
+##### サブスクリプション関連
+| エンドポイント | メソッド | 説明 |
+|--------------|---------|------|
+| `/api/subscription/status` | GET | ユーザーのサブスク状況取得 |
+| `/api/subscription/create-checkout` | POST | Stripeチェックアウトセッション作成 |
+| `/api/subscription/portal` | POST | Stripe顧客ポータルURL生成 |
+| `/api/subscription/webhook` | POST | Stripeウェブフック受取 |
+
+##### 週間グラフ関連
+| エンドポイント | メソッド | 説明 |
+|--------------|---------|------|
+| `/api/todos/weekly-stats` | GET | 過去7日分のTodo統計データ取得 |
+
+**週間統計レスポンス形式:**
+```json
+{
+  "days": [
+    { "date": "2026-03-23", "completed": 5, "delayed": 1, "overdue": 2, "abandoned": 0 }
+  ],
+  "totalCompleted": 20,
+  "totalDelayed": 3,
+  "totalOverdue": 5,
+  "totalAbandoned": 1,
+  "completionRate": 68.9
+}
+```
+
+#### 実装ファイル
+
+```
+server/
+├── src/models/User.js              # subscriptionフィールド追加
+├── src/routes/
+│   ├── subscription.js             # 新規：サブスクAPI
+│   └── todos.js                    # 修正：削除権限・週間統計追加
+├── src/middleware/
+│   └── subscriptionAuth.js        # 新規：サブスク有効チェック
+└── src/utils/stripe.js            # 新規：Stripeユーティリティ
+
+functions/
+├── src/models/User.js              # subscriptionフィールド追加
+├── src/routes/
+│   ├── subscription.js             # 新規：サブスクAPI
+│   └── todos.js                    # 修正：削除権限・週間統計追加
+└── src/utils/stripe.js            # 新規：Stripeユーティリティ
+
+client/
+├── src/context/
+│   └── SubscriptionContext.jsx  # 新規：サブスク状態管理
+├── src/pages/
+│   ├── Pricing.jsx              # 新規：料金プランページ
+│   ├── Subscription.jsx        # 新規：サブスク管理ページ
+│   └── Dashboard.jsx           # 修正：削除ボタン・グラフ追加
+├── src/components/
+│   ├── WeeklyChart.jsx         # 新規：週間グラフコンポーネント
+│   ├── TodoItem.jsx            # 修正：削除ボタン追加
+│   └── SubscriptionBadge.jsx   # 新規：Premiumバッジ
+└── src/utils/api.js            # 修正：新しいAPI対応
+```
+
+#### Stripe連携
+
+- **公式サイト**: https://stripe.com
+- **ダッシュボード**: https://dashboard.stripe.com
+- **テストモード**: https://dashboard.stripe.com/test
+- **ドキュメント**: https://stripe.com/docs
+
+**Stripe環境変数:**
+```bash
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_MONTHLY=price_...
+STRIPE_PRICE_YEARLY=price_...
+```
+
+#### 実装状況
+
+| 項目 | ステータス |
+|------|-----------|
+| Userモデル更新（server） | 未着手 |
+| Userモデル更新（functions） | 未着手 |
+| 週間統計API（server） | 未着手 |
+| 週間統計API（functions） | 未着手 |
+| 削除権限チェック（server） | 未着手 |
+| 削除権限チェック（functions） | 未着手 |
+| サブスクAPI実装 | 未着手 |
+| Stripe設定 | 未着手 |
+| フロントエンド週間グラフ | 未着手 |
+| フロントエンド削除ボタン | 未着手 |
+| Pricingページ | 未着手 |
+| Subscriptionページ | 未着手 |
+| PROJECT.md更新 | ✅ 完了 |
+
+#### 今後の予定
+1. Stripeアカウント設定（テストモード）
+2. バックエンドAPI実装
+3. フロントエンドUI実装
+4. テスト・検証
+5. 本番デプロイ
+
 
 ---
 

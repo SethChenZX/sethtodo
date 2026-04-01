@@ -1,6 +1,6 @@
 # Dodo Todo App - プロジェクト進行状況
 
-**最終更新**: 2026年3月24日 (役割選択画面バグ修正)
+**最終更新**: 2026年3月27日 (ユーザー名表示機能 + Todo作成通知機能削除)
 
 ## 📊 プロジェクト概要
 
@@ -11,25 +11,33 @@
 ### バックエンド (Cloud Functions - functions/)
 - [x] Cloud Functions 設定 (`index.js`)
 - [x] MongoDB接続 (`mongoose`)
-- [x] Userモデル (`src/models/User.js`)
+- [x] Userモデル (`src/models/User.js`) - `name` フィールド追加
 - [x] Todoモデル (`src/models/Todo.js`)
 - [x] Todo CRUD API (`src/routes/todos.js`)
-- [x] 認証API (`src/routes/auth.js`)
-- [x] 管理者API (`src/routes/admin.js`)
+- [x] 認証API (`src/routes/auth.js`) - `name` 処理追加
+- [x] 管理者API (`src/routes/admin.js`) - `populate` に `name` 追加
 - [x] Firebase Auth トークン検証 (`src/middleware/firebaseAuth.js`)
 - [x] 役割更新API (`PUT /auth/role`)
+- [x] 名前更新API (`PUT /auth/name`)
 
 ### フロントエンド (client/)
 - [x] React + Viteプロジェクト構成
 - [x] Firebase Auth SDK設定 (`firebase.js`)
-- [x] 認証コンテキスト (`src/context/AuthContext.jsx`)
+- [x] 認証コンテキスト (`src/context/AuthContext.jsx`) - `loginWithFirebase` シグネチャ変更
 - [x] ログインページ (`src/pages/Login.jsx`)
   - Google Sign-Inボタン
   - Email/Password ログイン
   - Email/Password 新規登録
+  - `displayName` を `loginWithFirebase` に渡すように修正
 - [x] 役割選択ページ (`src/pages/SelectRole.jsx`)
 - [x] ダッシュボードページ (`src/pages/Dashboard.jsx`)
+  - ヘッダーにユーザー名表示（太字）
 - [x] 管理パネル (`src/pages/Admin.jsx`)
+  - `groupedByUser` ロジック修正
+  - ユーザー名（メールアドレス）表示対応
+- [x] APIユーティリティ (`src/utils/userApi.js`)
+  - `verify()` に `name` パラメータ追加
+  - `updateName()` 関数追加
 - [x] ステータスベースのフィルター機能
 - [x] レスポンシブCSSスタイル
 - [x] Firebase Hosting & Cloud Functions 連携設定
@@ -69,6 +77,36 @@
   - AuthContext.jsx: `dbUser?.role` が `undefined` の場合に `null` を返すように修正
   - Login.jsx/App.jsx: `null` と `undefined` の両方をチェックするように更新
   - Renderにデプロイ済み
+
+### 🆕 機能追加 (2026-03-27)
+- [x] ユーザー名表示機能
+  - Userモデルに `name` フィールド追加
+  - Login.jsxで `displayName` を `loginWithFirebase` に渡すように修正
+  - AuthContext.jsxで `providedName` を優先的に使用
+  - Dashboard.jsxでヘッダーにユーザー名表示（太字）
+- [x] Adminパネル修正
+  - admin.jsで `populate('userId', 'email name')` に修正
+  - Admin.jsxで `groupedByUser` ロジック修正
+  - ユーザー名（メールアドレス）表示対応
+- [x] API修正
+  - auth.jsの `/verify` エンドポイントで `name` 処理追加
+  - auth.jsに `/name` エンドポイント追加（名前変更用）
+  - userApi.jsの `verify()` に `name` パラメータ追加
+  - userApi.jsに `updateName()` 関数追加
+
+### 🗑️ 削除した機能 (2026-03-27)
+- [x] Todo作成通知機能
+  - Dashboard.jsxから `creationNotification` state、通知設定、通知UIを削除
+
+### 📧 メール通知機能追加 (2026-03-27)
+- [x] Todo作成時Superユーザーへメール通知
+  - server/src/utils/email.js - sendTodoCreatedNotification関数追加
+  - server/src/routes/todos.js - Todo作成時にメール送信呼び出し追加
+  - functions/src/utils/email.js - 新規作成（メール通知ユーティリティ）
+  - functions/src/routes/todos.js - Todo作成時にメール送信呼び出し追加
+  - functions/package.json - resend依存関係追加
+  - 本物メールアドレス持有者のSuperユーザーのみ受信
+  - メール内容：作成者名、タイトル、説明文
 
 ## 🔄 現在の認証方法
 
@@ -285,6 +323,12 @@ ipconfig      # Windows
 cd server
 node migrations/add-deadline-field.js
 ```
+
+### ユーザー名フィールド追加
+Userモデルに `name` フィールドを追加（デフォルト: 空文字列）
+- 新規登録時に `name` が保存される
+- 既存ユーザーは次回ログイン時に自動的に `name` が設定される
+- メールアドレスの@前部分がデフォルト値として使用される
 
 ### 論理削除フィールドについて
 - Normalユーザーの削除リクエストはサーバー側でブロック（403エラー）

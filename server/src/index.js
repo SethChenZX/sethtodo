@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import adminRoutes from './routes/admin.js';
 import authRoutes from './routes/auth.js';
 import todoRoutes from './routes/todos.js';
+import dailySummaryRoutes from './routes/dailySummary.js';
 
 const app = express();
 
@@ -25,6 +26,7 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/daily-summary', dailySummaryRoutes);
 
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 3001;

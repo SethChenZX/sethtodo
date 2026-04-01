@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import adminRoutes from './src/routes/admin.js';
 import authRoutes from './src/routes/auth.js';
 import todoRoutes from './src/routes/todos.js';
+import dailySummaryRoutes from './src/routes/dailySummary.js';
 
 const app = express();
 
@@ -35,6 +36,7 @@ const connectMongo = async () => {
 app.use('/auth', authRoutes);
 app.use('/todos', todoRoutes);
 app.use('/admin', adminRoutes);
+app.use('/daily-summary', dailySummaryRoutes);
 
 app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Dodo Todo API' });

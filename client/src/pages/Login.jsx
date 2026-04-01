@@ -82,7 +82,7 @@ const Login = () => {
       if (displayName) {
         await updateProfile(result.user, { displayName });
       }
-      await loginWithFirebase(result.user);
+      await loginWithFirebase(result.user, displayName);
     } catch (err) {
       console.error('Signup error:', err);
       if (err.code === 'auth/email-already-in-use') {

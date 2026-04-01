@@ -254,7 +254,8 @@ const Dashboard = () => {
               Admin
             </button>
           )}
-          <span style={{ margin: '0 10px' }}>{user.email}</span>
+          <span style={{ margin: '0 10px', fontWeight: 'bold' }}>{user.displayName}</span>
+          <span style={{ color: '#666', fontSize: '14px' }}>({user.email})</span>
           <button className="btn btn-danger" onClick={logout}>Logout</button>
         </div>
       </div>
@@ -511,6 +512,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

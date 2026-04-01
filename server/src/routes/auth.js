@@ -157,7 +157,7 @@ router.post('/check-verified', async (req, res) => {
 
 router.post('/verify', async (req, res) => {
   try {
-    const { firebaseUid, email, role } = req.body;
+    const { firebaseUid, email, role, name } = req.body;
     
     if (!firebaseUid || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -166,7 +166,11 @@ router.post('/verify', async (req, res) => {
     let user = await User.findOne({ firebaseUid });
     
     if (!user) {
-      user = new User({ firebaseUid, email, role: null });
+      const userName = name || email.split('@')[0];
+      user = new User({ firebaseUid, email, name: userName, role: null });
+      await user.save();
+    } else if (name && name !== user.name) {
+      user.name = name;
       await user.save();
     }
 
@@ -174,6 +178,7 @@ router.post('/verify', async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
+        name: user.name,
         role: user.role
       }
     });
@@ -214,6 +219,38 @@ router.put('/role', async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
+        name: user.name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/name', async (req, res) => {
+  try {
+    const { firebaseUid, name } = req.body;
+    
+    if (!firebaseUid || !name) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
+    const user = await User.findOneAndUpdate(
+      { firebaseUid },
+      { name },
+      { new: true }
+    );
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ 
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
         role: user.role
       }
     });
