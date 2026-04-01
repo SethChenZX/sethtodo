@@ -18,16 +18,16 @@ const verifySecret = (req, res, next) => {
   next();
 };
 
-const getYesterdayRange = () => {
+const getTodayRange = () => {
   const now = new Date();
-  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0, 0);
-  const yesterdayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
-  return { yesterdayStart: yesterday, yesterdayEnd: yesterdayEnd };
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+  return { todayStart, todayEnd };
 };
 
 router.post('/send', verifySecret, async (req, res) => {
   try {
-    const { yesterdayStart, yesterdayEnd } = getYesterdayRange();
+    const { todayStart, todayEnd } = getTodayRange();
 
     const allTodos = await Todo.find({ isDeleted: false });
 
@@ -41,11 +41,11 @@ router.post('/send', verifySecret, async (req, res) => {
       const createdAt = new Date(todo.createdAt);
       const updatedAt = new Date(todo.updatedAt);
 
-      if (createdAt >= yesterdayStart && createdAt <= yesterdayEnd) {
+      if (createdAt >= todayStart && createdAt <= todayEnd) {
         createdCount++;
       }
 
-      if (updatedAt >= yesterdayStart && updatedAt <= yesterdayEnd) {
+      if (updatedAt >= todayStart && updatedAt <= todayEnd) {
         if (todo.status === 'completed') {
           completedCount++;
         } else if (todo.status === 'overdue') {

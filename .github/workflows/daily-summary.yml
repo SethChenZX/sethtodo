@@ -2,7 +2,7 @@ name: Daily Todo Summary
 
 on:
   schedule:
-    - cron: '2 15 * * *'
+    - cron: '30 14 * * *'
   workflow_dispatch:
 
 jobs:
