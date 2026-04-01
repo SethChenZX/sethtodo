@@ -25,54 +25,127 @@ const getTodayRange = () => {
   return { todayStart, todayEnd };
 };
 
+const ITEM_LIMIT = 15;
+
 router.post('/send', verifySecret, async (req, res) => {
   try {
     const { todayStart, todayEnd } = getTodayRange();
+    const now = new Date();
 
-    const allTodos = await Todo.find({ isDeleted: false });
+    const createdTodos = await Todo.find({
+      isDeleted: false,
+      createdAt: { $gte: todayStart, $lte: todayEnd }
+    })
+      .populate('userId', 'email name')
+      .sort({ createdAt: 1 })
+      .limit(ITEM_LIMIT);
 
-    let createdCount = 0;
-    let completedCount = 0;
-    let overdueCount = 0;
-    let delayedCount = 0;
-    let abandonedCount = 0;
+    const delayedTodos = await Todo.find({
+      isDeleted: false,
+      status: 'delayed',
+      delayedAt: { $gte: todayStart, $lte: todayEnd }
+    })
+      .populate('userId', 'email name')
+      .sort({ delayedAt: 1 })
+      .limit(ITEM_LIMIT);
 
-    for (const todo of allTodos) {
-      const createdAt = new Date(todo.createdAt);
-      const updatedAt = new Date(todo.updatedAt);
+    const overdueTodos = await Todo.find({
+      isDeleted: false,
+      status: 'overdue',
+      updatedAt: { $gte: todayStart, $lte: todayEnd }
+    })
+      .populate('userId', 'email name')
+      .sort({ updatedAt: 1 })
+      .limit(ITEM_LIMIT);
 
-      if (createdAt >= todayStart && createdAt <= todayEnd) {
-        createdCount++;
-      }
+    const completedTodos = await Todo.find({
+      isDeleted: false,
+      status: 'completed',
+      updatedAt: { $gte: todayStart, $lte: todayEnd }
+    })
+      .populate('userId', 'email name')
+      .sort({ updatedAt: 1 })
+      .limit(ITEM_LIMIT);
 
-      if (updatedAt >= todayStart && updatedAt <= todayEnd) {
-        if (todo.status === 'completed') {
-          completedCount++;
-        } else if (todo.status === 'overdue') {
-          overdueCount++;
-        } else if (todo.status === 'delayed') {
-          delayedCount++;
-        } else if (todo.status === 'abandoned') {
-          abandonedCount++;
-        }
-      }
-    }
+    const abandonedTodos = await Todo.find({
+      isDeleted: false,
+      status: 'abandoned',
+      updatedAt: { $gte: todayStart, $lte: todayEnd }
+    })
+      .populate('userId', 'email name')
+      .sort({ updatedAt: 1 })
+      .limit(ITEM_LIMIT);
+
+    const createdCount = createdTodos.length;
+    const delayedCount = delayedTodos.length;
+    const overdueCount = overdueTodos.length;
+    const completedCount = completedTodos.length;
+    const abandonedCount = abandonedTodos.length;
 
     const totalTracked = completedCount + overdueCount + delayedCount + abandonedCount;
-    const completionRate = totalTracked > 0 
-      ? ((completedCount / totalTracked) * 100).toFixed(1) 
+    const completionRate = totalTracked > 0
+      ? ((completedCount / totalTracked) * 100).toFixed(1)
       : '0.0';
+
+    const todosData = {
+      created: createdTodos.map(t => ({
+        email: t.userId?.email || 'Unknown',
+        title: t.title,
+        description: t.description || '',
+        deadline: t.deadline,
+        status: t.status
+      })),
+      delayed: delayedTodos.map(t => ({
+        email: t.userId?.email || 'Unknown',
+        title: t.title,
+        description: t.description || '',
+        oldStatus: t.previousStatus || 'pending',
+        newStatus: t.status,
+        delayDays: t.delayDays || 0,
+        newDeadline: t.deadline
+      })),
+      overdue: overdueTodos.map(t => ({
+        email: t.userId?.email || 'Unknown',
+        title: t.title,
+        description: t.description || '',
+        oldStatus: t.previousStatus || 'pending',
+        newStatus: t.status,
+        deadline: t.deadline
+      })),
+      completed: completedTodos.map(t => ({
+        email: t.userId?.email || 'Unknown',
+        title: t.title,
+        description: t.description || '',
+        oldStatus: t.previousStatus || 'pending',
+        newStatus: t.status
+      })),
+      abandoned: abandonedTodos.map(t => ({
+        email: t.userId?.email || 'Unknown',
+        title: t.title,
+        description: t.description || '',
+        oldStatus: t.previousStatus || 'pending',
+        newStatus: t.status
+      }))
+    };
 
     const stats = {
       createdCount,
-      completedCount,
-      overdueCount,
       delayedCount,
+      overdueCount,
+      completedCount,
       abandonedCount,
-      completionRate
+      completionRate,
+      todosData
     };
 
-    console.log('Daily summary stats:', stats);
+    console.log('Daily summary stats:', {
+      createdCount,
+      delayedCount,
+      overdueCount,
+      completedCount,
+      abandonedCount,
+      completionRate
+    });
 
     await sendDailySummaryEmail(stats);
 
