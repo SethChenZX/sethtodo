@@ -41,7 +41,8 @@
 ### メール通知
 - [x] Todo作成時Superユーザーへメール通知（Resend使用）
 - [x] 本物メールアドレス持有者のみ送信
-- [x] メール内容：作成者名、タイトル、説明文
+- [x] メール内容：作成者名、タイトル、説明文、予定時間(estimatedTime)
+- [x] ステータス変更時メール通知（actualTime含む）
 
 ### 管理機能（Superユーザーのみ）
 - [x] 全ユーザーのTodo閲覧
@@ -71,15 +72,15 @@
 
 ### Backend
 - **Runtime**: Node.js 18
-- **Platform**: Firebase Cloud Functions
-- **Framework**: Express.js（Cloud Functions内で使用）
+- **Platform**: Render
+- **Framework**: Express.js
 - **Database**: MongoDB
 - **ODM**: Mongoose
 - **Authentication**: Firebase Auth
 
 ### Infrastructure
 - **Hosting**: Firebase Hosting
-- **Backend**: Firebase Cloud Functions
+- **Backend**: Render
 - **Database**: MongoDB Atlas
 - **Authentication**: Firebase Authentication
 
@@ -523,6 +524,8 @@ Todo更新
   deadline: Date,            // 期限（当日23:59:59）
   reminderSent: Boolean,      // リマインダー送信済み
   isDeleted: Boolean,        // 論理削除フラグ
+  estimatedTime: Number,     // 予定時間（分）
+  actualTime: Number,        // 実際にかかった時間（分）
   createdAt: Date,           // 作成日時
   updatedAt: Date            // 更新日時
 }
@@ -743,6 +746,26 @@ DAILY_SUMMARY_SECRET: <任意のシークレットキー>
 ---
 
 ## 実装履歴
+
+### 2026-04-03: estimatedTime と actualTime のメール通知追加
+
+#### 概要
+Todo作成時のメールに予定時間(estimatedTime)、Todo完了時のメールに実際にかかった時間(actualTime)を追加。
+
+#### 変更ファイル
+- `server/src/utils/email.js` - sendTodoCreatedNotification, sendTodoStatusChangedNotification
+- `functions/src/utils/email.js` - 同上（現在はお気に入り）
+
+#### メール内容変更
+
+##### Todo作成通知メール
+- 追加: `Estimated Time: ${todo.estimatedTime} min`
+
+##### Todoステータス変更通知メール（完了時）
+- 追加: `Actual Time: ${todo.actualTime} min`（completed状態のみ）
+
+#### デプロイ
+- Render (server/): 完了
 
 ### 2026-03-27: ユーザー名表示機能
 
