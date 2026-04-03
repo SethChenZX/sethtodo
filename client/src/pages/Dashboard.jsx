@@ -123,6 +123,11 @@ const Dashboard = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
+    if (user.role === 'normal' && !estimatedTime) {
+      alert('Please select estimated completion time');
+      return;
+    }
+
     const today = new Date();
     today.setHours(23, 59, 59, 999);
 
@@ -134,7 +139,7 @@ const Dashboard = () => {
       deadline: today.toISOString()
     };
 
-    if (user.role === 'normal' && estimatedTime) {
+    if (user.role === 'normal') {
       todoData.estimatedTime = Number(estimatedTime);
     }
 
@@ -155,15 +160,17 @@ const Dashboard = () => {
   const handleDateSubmit = async () => {
     if (!selectedTodoId || !completedDate) return;
 
+    if (!actualTime) {
+      alert('Please enter actual time spent');
+      return;
+    }
+
     const token = await user.getIdToken();
     const updateData = {
       status: 'completed',
-      completedAt: new Date(completedDate).toISOString()
+      completedAt: new Date(completedDate).toISOString(),
+      actualTime: Number(actualTime)
     };
-
-    if (actualTime) {
-      updateData.actualTime = Number(actualTime);
-    }
 
     await todoApi.update(selectedTodoId, updateData, token);
     
@@ -293,6 +300,7 @@ const Dashboard = () => {
           <select
             value={estimatedTime}
             onChange={(e) => setEstimatedTime(e.target.value)}
+            required
             style={{
               width: '100%',
               padding: '10px',
@@ -302,7 +310,7 @@ const Dashboard = () => {
               borderRadius: '4px'
             }}
           >
-            <option value="">Estimated completion time (optional)</option>
+            <option value="">Select estimated completion time</option>
             <option value="10">10 min</option>
             <option value="20">20 min</option>
             <option value="30">30 min</option>
@@ -473,14 +481,15 @@ const Dashboard = () => {
             />
             <div style={{ marginBottom: '15px' }}>
               <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#666' }}>
-                Actual time spent (minutes):
+                Actual time spent (minutes): *
               </label>
               <input
                 type="number"
-                min="0"
+                min="1"
                 value={actualTime}
                 onChange={(e) => setActualTime(e.target.value)}
-                placeholder="Optional"
+                placeholder="Required"
+                required
                 style={{
                   width: '100%',
                   padding: '10px',
