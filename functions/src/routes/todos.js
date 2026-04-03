@@ -73,7 +73,8 @@ router.post('/', async (req, res) => {
       title: req.body.title,
       description: req.body.description,
       status: 'pending',
-      deadline: today
+      deadline: today,
+      estimatedTime: user.role === 'normal' ? req.body.estimatedTime : undefined
     });
 
     await todo.save();
@@ -99,7 +100,7 @@ router.put('/:id', async (req, res) => {
     const todo = await Todo.findOne({ _id: req.params.id, userId: user._id, isDeleted: false });
     if (!todo) return res.status(404).json({ error: 'Todo not found' });
 
-    const { title, description, status, completedAt, delayDays, reminderSent } = req.body;
+    const { title, description, status, completedAt, delayDays, reminderSent, actualTime } = req.body;
     const oldStatus = todo.status;
     if (title) todo.title = title;
     if (description !== undefined) todo.description = description;
@@ -115,6 +116,7 @@ router.put('/:id', async (req, res) => {
     }
     if (completedAt !== undefined) todo.completedAt = completedAt ? new Date(completedAt) : undefined;
     if (reminderSent !== undefined) todo.reminderSent = reminderSent;
+    if (actualTime !== undefined) todo.actualTime = actualTime ? Number(actualTime) : undefined;
 
     await todo.save();
 

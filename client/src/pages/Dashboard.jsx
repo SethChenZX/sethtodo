@@ -64,6 +64,8 @@ const Dashboard = () => {
   const [showDelayPicker, setShowDelayPicker] = useState(false);
   const [selectedDelayTodoId, setSelectedDelayTodoId] = useState(null);
   const [reminderNotification, setReminderNotification] = useState(null);
+  const [estimatedTime, setEstimatedTime] = useState('');
+  const [actualTime, setActualTime] = useState('');
 
   const fetchTodos = async () => {
     try {
@@ -125,15 +127,22 @@ const Dashboard = () => {
     today.setHours(23, 59, 59, 999);
 
     const token = await user.getIdToken();
-    await todoApi.create({
+    const todoData = {
       title,
       description,
       status: 'pending',
       deadline: today.toISOString()
-    }, token);
+    };
+
+    if (user.role === 'normal' && estimatedTime) {
+      todoData.estimatedTime = Number(estimatedTime);
+    }
+
+    await todoApi.create(todoData, token);
     
     setTitle('');
     setDescription('');
+    setEstimatedTime('');
     fetchTodos();
   };
 
@@ -147,14 +156,21 @@ const Dashboard = () => {
     if (!selectedTodoId || !completedDate) return;
 
     const token = await user.getIdToken();
-    await todoApi.update(selectedTodoId, {
+    const updateData = {
       status: 'completed',
       completedAt: new Date(completedDate).toISOString()
-    }, token);
+    };
+
+    if (actualTime) {
+      updateData.actualTime = Number(actualTime);
+    }
+
+    await todoApi.update(selectedTodoId, updateData, token);
     
     setShowDatePicker(false);
     setSelectedTodoId(null);
     setCompletedDate(getTodayString());
+    setActualTime('');
     fetchTodos();
   };
 
@@ -162,6 +178,7 @@ const Dashboard = () => {
     setShowDatePicker(false);
     setSelectedTodoId(null);
     setCompletedDate(getTodayString());
+    setActualTime('');
   };
 
   const handleDelayClick = (todoId) => {
@@ -272,6 +289,30 @@ const Dashboard = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        {user.role === 'normal' && (
+          <select
+            value={estimatedTime}
+            onChange={(e) => setEstimatedTime(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px',
+              fontSize: '16px',
+              marginTop: '10px',
+              border: '1px solid #ccc',
+              borderRadius: '4px'
+            }}
+          >
+            <option value="">Estimated completion time (optional)</option>
+            <option value="10">10 min</option>
+            <option value="20">20 min</option>
+            <option value="30">30 min</option>
+            <option value="40">40 min</option>
+            <option value="50">50 min</option>
+            <option value="60">60 min</option>
+            <option value="90">90 min</option>
+            <option value="120">120 min</option>
+          </select>
+        )}
         <button className="btn btn-primary" type="submit" style={{ marginTop: '10px' }}>Add Todo</button>
       </form>
 
@@ -357,6 +398,16 @@ const Dashboard = () => {
                   Deadline: {formatDateTime(todo.deadline)}
                 </span>
               )}
+              {todo.estimatedTime && (
+                <span style={{ marginLeft: '10px', fontSize: '12px', color: '#2196f3' }}>
+                  Est: {todo.estimatedTime} min
+                </span>
+              )}
+              {todo.actualTime && (
+                <span style={{ marginLeft: '10px', fontSize: '12px', color: '#4caf50' }}>
+                  Actual: {todo.actualTime} min
+                </span>
+              )}
             </div>
             <div className="todo-actions">
               {(todo.status === 'pending' || todo.status === 'overdue') && (
@@ -415,11 +466,30 @@ const Dashboard = () => {
                 width: '100%',
                 padding: '10px',
                 fontSize: '16px',
-                marginBottom: '20px',
+                marginBottom: '15px',
                 border: '1px solid #ccc',
                 borderRadius: '4px'
               }}
             />
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#666' }}>
+                Actual time spent (minutes):
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={actualTime}
+                onChange={(e) => setActualTime(e.target.value)}
+                placeholder="Optional"
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  fontSize: '16px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px'
+                }}
+              />
+            </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button className="btn btn-secondary" onClick={handleDateCancel}>
                 Cancel

@@ -15,6 +15,8 @@ const todoSchema = new mongoose.Schema({
   deadline: { type: Date, required: true },
   reminderSent: { type: Boolean, default: false },
   isDeleted: { type: Boolean, default: false },
+  estimatedTime: Number,
+  actualTime: Number,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
