@@ -2,6 +2,8 @@ import admin from 'firebase-admin';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,9 +14,24 @@ const initializeFirebase = () => {
   if (firebaseInitialized) return;
 
   try {
-    const serviceAccount = JSON.parse(
-      readFileSync(join(__dirname, '../../serviceAccountKey.json'), 'utf8')
-    );
+    let serviceAccount;
+
+    if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+      serviceAccount = {
+        type: 'service_account',
+        project_id: process.env.FIREBASE_PROJECT_ID || process.env.GCP_PROJECT,
+        client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      };
+    } else {
+      const keyPath = join(__dirname, '../../serviceAccountKey.json');
+      try {
+        serviceAccount = JSON.parse(readFileSync(keyPath, 'utf8'));
+      } catch (e) {
+        console.error('Service account key file not found and environment variables not set');
+        throw new Error('Firebase Admin SDK cannot be initialized without credentials');
+      }
+    }
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
