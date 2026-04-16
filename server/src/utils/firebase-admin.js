@@ -14,41 +14,61 @@ const initializeFirebase = () => {
   if (firebaseInitialized) return;
 
   console.log('Initializing Firebase Admin SDK...');
-  console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'set' : 'not set');
-  console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL ? 'set' : 'not set');
-  console.log('FIREBASE_PRIVATE_KEY:', process.env.FIREBASE_PRIVATE_KEY ? 'set' : 'not set');
 
   try {
     let serviceAccount;
 
-    if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
-      let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+    // First, try to use serviceAccountKey.json file (local development)
+    const keyPath = join(__dirname, '../../serviceAccountKey.json');
+    try {
+      serviceAccount = JSON.parse(readFileSync(keyPath, 'utf8'));
+      console.log('Using serviceAccountKey.json file');
+    } catch (fileError) {
+      console.log('serviceAccountKey.json not found, trying environment variables');
 
-      // Handle both escaped \n and actual newlines
-      if (privateKey.includes('\\n')) {
-        privateKey = privateKey.replace(/\\n/g, '\n');
-      } else if (!privateKey.includes('\n') && privateKey.includes('-----BEGIN')) {
-        // If it doesn't have newlines but is a PEM, it might be corrupted
-        // Try to fix by replacing literal backslash-n
-        privateKey = privateKey.replace(/\\n/g, '\n');
+      // Second, try environment variables with base64 encoded private key
+      const base64Key = process.env.FIREBASE_PRIVATE_KEY_BASE64;
+      const projectId = process.env.FIREBASE_PROJECT_ID;
+      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+
+      if (base64Key && clientEmail) {
+        try {
+          const privateKey = Buffer.from(base64Key, 'base64').toString('utf8');
+          serviceAccount = {
+            type: 'service_account',
+            project_id: projectId,
+            client_email: clientEmail,
+            private_key: privateKey,
+          };
+          console.log('Using base64 encoded private key from environment');
+        } catch (decodeError) {
+          console.error('Failed to decode base64 private key:', decodeError);
+        }
       }
 
-      serviceAccount = {
-        type: 'service_account',
-        project_id: process.env.FIREBASE_PROJECT_ID || process.env.GCP_PROJECT,
-        client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        private_key: privateKey,
-      };
-      console.log('Using environment variables for Firebase credentials');
-    } else {
-      console.log('Environment variables not found, trying serviceAccountKey.json');
-      const keyPath = join(__dirname, '../../serviceAccountKey.json');
-      try {
-        serviceAccount = JSON.parse(readFileSync(keyPath, 'utf8'));
-      } catch (e) {
-        console.error('Service account key file not found and environment variables not set');
-        throw new Error('Firebase Admin SDK cannot be initialized without credentials');
+      // Third, try regular private key with various formats
+      if (!serviceAccount) {
+        const rawKey = process.env.FIREBASE_PRIVATE_KEY;
+        if (rawKey && clientEmail) {
+          let privateKey = rawKey;
+          if (privateKey.includes('\\n')) {
+            privateKey = privateKey.replace(/\\n/g, '\n');
+          }
+          if (privateKey.includes('-----BEGIN')) {
+            serviceAccount = {
+              type: 'service_account',
+              project_id: projectId,
+              client_email: clientEmail,
+              private_key: privateKey,
+            };
+            console.log('Using raw private key from environment');
+          }
+        }
       }
+    }
+
+    if (!serviceAccount) {
+      throw new Error('Firebase credentials not available');
     }
 
     admin.initializeApp({
