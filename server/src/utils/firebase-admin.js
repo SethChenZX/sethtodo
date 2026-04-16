@@ -13,6 +13,11 @@ let firebaseInitialized = false;
 const initializeFirebase = () => {
   if (firebaseInitialized) return;
 
+  console.log('Initializing Firebase Admin SDK...');
+  console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'set' : 'not set');
+  console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL ? 'set' : 'not set');
+  console.log('FIREBASE_PRIVATE_KEY:', process.env.FIREBASE_PRIVATE_KEY ? 'set' : 'not set');
+
   try {
     let serviceAccount;
 
@@ -23,7 +28,9 @@ const initializeFirebase = () => {
         client_email: process.env.FIREBASE_CLIENT_EMAIL,
         private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
       };
+      console.log('Using environment variables for Firebase credentials');
     } else {
+      console.log('Environment variables not found, trying serviceAccountKey.json');
       const keyPath = join(__dirname, '../../serviceAccountKey.json');
       try {
         serviceAccount = JSON.parse(readFileSync(keyPath, 'utf8'));

@@ -279,7 +279,9 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ error: 'このメールアドレスは登録されていません' });
     }
 
+    console.log('Checking Firebase user for:', email);
     const firebaseUser = await getUserByEmail(email);
+    console.log('Firebase user result:', firebaseUser ? 'found' : 'not found');
     if (!firebaseUser) {
       return res.status(404).json({ error: 'このメールアドレスは登録されていません' });
     }
