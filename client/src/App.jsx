@@ -4,6 +4,8 @@ import Login from './pages/Login';
 import SelectRole from './pages/SelectRole';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -37,6 +39,8 @@ function App() {
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/select-role" element={<SelectRoleRoute><SelectRole /></SelectRoleRoute>} />
           <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/admin" element={<SuperUserRoute><Admin /></SuperUserRoute>} />

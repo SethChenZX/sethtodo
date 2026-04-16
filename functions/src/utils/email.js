@@ -16,6 +16,7 @@ A new todo has been created!
 Created by: ${creatorName}
 Title: ${todo.title}
 Description: ${todo.description || '(No description)'}
+Estimated Time: ${todo.estimatedTime ? `${todo.estimatedTime} min` : 'N/A'}
 
 ---
 This is an automated notification from Dodo Todo App.
@@ -31,8 +32,11 @@ This is an automated notification from Dodo Todo App.
     <p style="margin: 0 0 16px; color: #374151; font-size: 16px;">
       <strong>Title:</strong> ${todo.title}
     </p>
-    <p style="margin: 0; color: #374151; font-size: 16px;">
+    <p style="margin: 0 0 16px; color: #374151; font-size: 16px;">
       <strong>Description:</strong> ${todo.description || '(No description)'}
+    </p>
+    <p style="margin: 0; color: #374151; font-size: 16px;">
+      <strong>Estimated Time:</strong> ${todo.estimatedTime ? `${todo.estimatedTime} min` : 'N/A'}
     </p>
   </div>
   <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
@@ -68,6 +72,8 @@ export const sendTodoStatusChangedNotification = async (superUsers, todo, oldSta
     return { success: true, message: 'No recipients' };
   }
 
+  const actualTimeLine = newStatus === 'completed' && todo.actualTime ? `Actual Time: ${todo.actualTime} min` : '';
+
   const emailContent = `
 [Status Changed] Todo Status Update
 
@@ -75,6 +81,7 @@ Created by: ${creatorName}
 Title: ${todo.title}
 Old Status: ${oldStatus}
 New Status: ${newStatus}
+${actualTimeLine}
 
 ---
 This is an automated notification from Dodo Todo App.
@@ -93,9 +100,10 @@ This is an automated notification from Dodo Todo App.
     <p style="margin: 0 0 16px; color: #374151; font-size: 16px;">
       <strong>Old Status:</strong> ${oldStatus}
     </p>
-    <p style="margin: 0; color: #374151; font-size: 16px;">
+    <p style="margin: 0 0 16px; color: #374151; font-size: 16px;">
       <strong>New Status:</strong> ${newStatus}
     </p>
+    ${actualTimeLine ? `<p style="margin: 0; color: #16a34a; font-size: 16px;"><strong>Actual Time:</strong> ${todo.actualTime} min</p>` : ''}
   </div>
   <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
   <p style="color: #9ca3af; font-size: 12px;">

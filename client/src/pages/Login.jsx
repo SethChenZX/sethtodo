@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../firebase';
 import { 
@@ -213,6 +213,12 @@ const Login = () => {
             fontSize: '14px'
           }}
         />
+
+        {!isSignUp && (
+          <p style={{ marginTop: '5px', marginBottom: '10px', fontSize: '14px', textAlign: 'right' }}>
+            <Link to="/forgot-password" style={{ color: '#4a90d9' }}>パスワードを忘れた場合</Link>
+          </p>
+        )}
 
         {isSignUp && (
           <input

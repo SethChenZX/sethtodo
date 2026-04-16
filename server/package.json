@@ -13,7 +13,8 @@
     "firebase-admin": "^12.0.0",
     "mongoose": "^8.0.3",
     "node-fetch": "^3.3.2",
+    "otp-generator": "^4.0.1",
     "resend": "^4.0.0",
-    "otp-generator": "^4.0.1"
+    "stripe": "^22.0.1"
   }
 }

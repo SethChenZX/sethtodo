@@ -1,8 +1,8 @@
 const getApiUrl = () => {
   const hostname = window.location.hostname;
-  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+  const isLocalNetwork = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.');
   
-  if (isLocalhost) {
+  if (isLocalNetwork) {
     return import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
   }
   
@@ -10,7 +10,14 @@ const getApiUrl = () => {
 };
 
 const handleResponse = async (response) => {
-  const data = await response.json();
+  const text = await response.text();
+  console.log('API Response:', response.status, text);
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`);
+  }
   if (!response.ok) {
     const error = new Error(data.error || 'エラーが発生しました');
     error.data = data;
@@ -43,6 +50,24 @@ export const authApi = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
+    });
+    return handleResponse(response);
+  },
+
+  forgotPassword: async (email) => {
+    const response = await fetch(`${getApiUrl()}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    return handleResponse(response);
+  },
+
+  resetPassword: async (email, otp, newPassword) => {
+    const response = await fetch(`${getApiUrl()}/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp, newPassword })
     });
     return handleResponse(response);
   }

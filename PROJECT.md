@@ -747,6 +747,88 @@ DAILY_SUMMARY_SECRET: <任意のシークレットキー>
 
 ## 実装履歴
 
+### 2026-04-16: パスワードリセット機能追加
+
+#### 概要
+ユーザーがパスワードを忘れた場合、6桁の確認コードを使用してパスワードをリセットできる機能を追加。
+
+#### フロー
+1. ユーザーがログイン画面の「パスワードを忘れた場合」をクリック
+2. メールアドレスを入力
+3. 6桁の確認コードがメール送信
+4. メール内のリンクから新しいパスワード設定ページにアクセス
+5. 確認コードと新しいパスワード（8文字以上）を入力
+6. パスワードがFirebase Authで更新される
+
+#### 新規ファイル
+- `server/src/models/PasswordReset.js` - パスワードリセットトークン管理モデル
+- `server/src/utils/firebase-admin.js` - Firebase Admin SDK統合
+- `client/src/pages/ForgotPassword.jsx` - メールアドレス入力画面
+- `client/src/pages/ResetPassword.jsx` - 新しいパスワード入力画面
+
+#### 変更ファイル
+- `server/src/routes/auth.js` - `/forgot-password`, `/reset-password` エンドポイント追加
+- `server/src/utils/email.js` - `sendPasswordResetEmail` 関数追加
+- `client/src/utils/api.js` - `authApi` に `forgotPassword`, `resetPassword` メソッド追加
+- `client/src/pages/Login.jsx` - 「パスワードを忘れた場合」リンク追加
+- `client/src/App.jsx` - 新規ルートの登録
+- `PROJECT.md` - このエントリ追加
+
+#### APIエンドポイント
+
+##### POST /api/auth/forgot-password
+パスワードリセットコード生成・メール送信
+
+**Request Body**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "パスワードリセット用の確認コードをメールに送信しました",
+  "expiresIn": 900
+}
+```
+
+##### POST /api/auth/reset-password
+パスワードリセット
+
+**Request Body**
+```json
+{
+  "email": "user@example.com",
+  "otp": "123456",
+  "newPassword": "newpassword123"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "パスワードが正常に変更されました"
+}
+```
+
+#### 仕様
+- OTP: 6桁数字
+- 有効期限: 15分
+- 試行回数上限: 5回
+- 最小パスワード長: 8文字
+- Firebase Admin SDKでFirebase Authのパスワードを更新
+
+#### 実装状況
+- バックエンド: ✅ 完了
+- フロントエンド: ✅ 完了
+- PROJECT.md: ✅ 完了
+
+---
+
 ### 2026-04-03: estimatedTime と actualTime のメール通知追加
 
 #### 概要
@@ -927,8 +1009,8 @@ FirebaseがカスタムドメインのSSL証明書をプロビジョニングす
 | プラン | 価格 | 機能 |
 |-------|------|------|
 | Free | 無料 | 基本機能 |
-| Monthly | 月額 | Todo削除 + 週間グラフ |
-| Yearly | 年額 | Todo削除 + 週間グラフ |
+| Monthly | 月額 | Todo削除 |
+| Yearly | 年額 | Todo削除 |
 
 #### 機能詳細
 
@@ -939,16 +1021,6 @@ FirebaseがカスタムドメインのSSL証明書をプロビジョニングす
   - Superユーザー → 何でも削除可能
   - サブスク会員 → 自分のTodoのみ削除可能
   - Freeユーザー → 削除不可（403 Forbidden）
-
-##### 2. 週間グラフ
-- **対象者**: 全ユーザー
-- **内容**: 過去1週間のTodo状況を折れ線グラフで表示
-- **グラフ内容**:
-  - X軸: 過去7日間（日〜土）
-  - Y軸（左）: 各ステータスのTodo数
-  - Y軸（右）: 完了率（%）
-  - 折れ線4本: 完了数・延期数・期限切れ数・放棄数
-- **使用ライブラリ**: chart.js + react-chartjs-2
 
 #### データベース変更
 
@@ -972,25 +1044,6 @@ subscription: {
 | `/api/subscription/create-checkout` | POST | Stripeチェックアウトセッション作成 |
 | `/api/subscription/portal` | POST | Stripe顧客ポータルURL生成 |
 | `/api/subscription/webhook` | POST | Stripeウェブフック受取 |
-
-##### 週間グラフ関連
-| エンドポイント | メソッド | 説明 |
-|--------------|---------|------|
-| `/api/todos/weekly-stats` | GET | 過去7日分のTodo統計データ取得 |
-
-**週間統計レスポンス形式:**
-```json
-{
-  "days": [
-    { "date": "2026-03-23", "completed": 5, "delayed": 1, "overdue": 2, "abandoned": 0 }
-  ],
-  "totalCompleted": 20,
-  "totalDelayed": 3,
-  "totalOverdue": 5,
-  "totalAbandoned": 1,
-  "completionRate": 68.9
-}
-```
 
 #### 実装ファイル
 
@@ -1017,10 +1070,8 @@ client/
 ├── src/pages/
 │   ├── Pricing.jsx              # 新規：料金プランページ
 │   ├── Subscription.jsx        # 新規：サブスク管理ページ
-│   └── Dashboard.jsx           # 修正：削除ボタン・グラフ追加
+│   └── Dashboard.jsx           # 修正：削除ボタン追加
 ├── src/components/
-│   ├── WeeklyChart.jsx         # 新規：週間グラフコンポーネント
-│   ├── TodoItem.jsx            # 修正：削除ボタン追加
 │   └── SubscriptionBadge.jsx   # 新規：Premiumバッジ
 └── src/utils/api.js            # 修正：新しいAPI対応
 ```
@@ -1044,19 +1095,38 @@ STRIPE_PRICE_YEARLY=price_...
 
 | 項目 | ステータス |
 |------|-----------|
-| Userモデル更新（server） | 未着手 |
-| Userモデル更新（functions） | 未着手 |
-| 週間統計API（server） | 未着手 |
-| 週間統計API（functions） | 未着手 |
-| 削除権限チェック（server） | 未着手 |
-| 削除権限チェック（functions） | 未着手 |
-| サブスクAPI実装 | 未着手 |
-| Stripe設定 | 未着手 |
-| フロントエンド週間グラフ | 未着手 |
-| フロントエンド削除ボタン | 未着手 |
-| Pricingページ | 未着手 |
-| Subscriptionページ | 未着手 |
+| Userモデル更新（server） | ✅ 完了 |
+| Userモデル更新（functions） | ✅ 完了 |
+| 削除権限チェック（server） | ✅ 完了 |
+| 削除権限チェック（functions） | ✅ 完了 |
+| サブスクAPI実装（Stripeルート） | ✅ 完了 |
+| Stripe設定 | ✅ 完了 |
+| フロントエンド削除ボタン | ⏳ 未着手 |
+| Pricingページ | ⏳ 未着手 |
+| Subscriptionページ | ⏳ 未着手 |
 | PROJECT.md更新 | ✅ 完了 |
+
+#### 実装ファイル
+
+```
+server/
+├── src/models/User.js              # ✅ subscriptionフィールド追加済み
+├── src/routes/stripe.js            # ✅ Stripeルート実装済み
+└── src/utils/subscription.js      # ✅ isProUser, getProUserEmails実装済み
+```
+
+#### 未実装ファイル（フロントエンド）
+
+```
+client/
+├── src/context/
+│   └── SubscriptionContext.jsx    # ⏳ 要実装
+├── src/pages/
+│   ├── Pricing.jsx                 # ⏳ 要実装
+│   └── Subscription.jsx           # ⏳ 要実装
+├── src/components/
+│   └── SubscriptionBadge.jsx       # ⏳ 要実装
+└── src/App.jsx                    # ⏳ ルーティング追加要
 
 #### 今後の予定
 1. Stripeアカウント設定（テストモード）
