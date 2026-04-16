@@ -22,11 +22,22 @@ const initializeFirebase = () => {
     let serviceAccount;
 
     if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+      let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+      // Handle both escaped \n and actual newlines
+      if (privateKey.includes('\\n')) {
+        privateKey = privateKey.replace(/\\n/g, '\n');
+      } else if (!privateKey.includes('\n') && privateKey.includes('-----BEGIN')) {
+        // If it doesn't have newlines but is a PEM, it might be corrupted
+        // Try to fix by replacing literal backslash-n
+        privateKey = privateKey.replace(/\\n/g, '\n');
+      }
+
       serviceAccount = {
         type: 'service_account',
         project_id: process.env.FIREBASE_PROJECT_ID || process.env.GCP_PROJECT,
         client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        private_key: privateKey,
       };
       console.log('Using environment variables for Firebase credentials');
     } else {
