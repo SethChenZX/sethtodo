@@ -4,9 +4,10 @@ import User from '../models/User.js';
 import Verification from '../models/Verification.js';
 import PasswordReset from '../models/PasswordReset.js';
 import { sendOtpEmail, sendPasswordResetEmail } from '../utils/email.js';
-import { updateUserPassword, getUserByEmail } from '../utils/firebase-admin.js';
 
 const router = Router();
+
+const FIREBASE_WEB_API_KEY = process.env.FIREBASE_WEB_API_KEY;
 
 router.post('/send-otp', async (req, res) => {
   try {
@@ -23,10 +24,10 @@ router.post('/send-otp', async (req, res) => {
 
     await Verification.deleteMany({ email: email.toLowerCase() });
 
-    const otp = otpGenerator.generate(6, { 
+    const otp = otpGenerator.generate(6, {
       lowerCaseAlphabets: false,
-      upperCaseAlphabets: false, 
-      specialChars: false 
+      upperCaseAlphabets: false,
+      specialChars: false
     });
 
     const expiresMinutes = parseInt(process.env.OTP_EXPIRES_MINUTES, 10) || 5;
@@ -160,13 +161,13 @@ router.post('/check-verified', async (req, res) => {
 router.post('/verify', async (req, res) => {
   try {
     const { firebaseUid, email, role, name } = req.body;
-    
+
     if (!firebaseUid || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    
+
     let user = await User.findOne({ firebaseUid });
-    
+
     if (!user) {
       const userName = name || email.split('@')[0];
       user = new User({ firebaseUid, email, name: userName, role: null });
@@ -176,7 +177,7 @@ router.post('/verify', async (req, res) => {
       await user.save();
     }
 
-    res.json({ 
+    res.json({
       user: {
         id: user._id,
         email: user.email,
@@ -202,22 +203,22 @@ router.get('/me', async (req, res) => {
 router.put('/role', async (req, res) => {
   try {
     const { firebaseUid, role } = req.body;
-    
+
     if (!firebaseUid || !role) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    
+
     const user = await User.findOneAndUpdate(
       { firebaseUid },
       { role },
       { new: true }
     );
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json({ 
+    res.json({
       user: {
         id: user._id,
         email: user.email,
@@ -233,22 +234,22 @@ router.put('/role', async (req, res) => {
 router.put('/name', async (req, res) => {
   try {
     const { firebaseUid, name } = req.body;
-    
+
     if (!firebaseUid || !name) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    
+
     const user = await User.findOneAndUpdate(
       { firebaseUid },
       { name },
       { new: true }
     );
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json({ 
+    res.json({
       user: {
         id: user._id,
         email: user.email,
@@ -279,38 +280,33 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ error: 'このメールアドレスは登録されていません' });
     }
 
-    console.log('Checking Firebase user for:', email);
-    const firebaseUser = await getUserByEmail(email);
-    console.log('Firebase user result:', firebaseUser ? 'found' : 'not found');
-    if (!firebaseUser) {
-      return res.status(404).json({ error: 'このメールアドレスは登録されていません' });
+    if (!FIREBASE_WEB_API_KEY) {
+      console.error('FIREBASE_WEB_API_KEY is not set');
+      return res.status(500).json({ error: 'サーバー設定エラー' });
     }
 
-    await PasswordReset.deleteMany({ email: email.toLowerCase() });
+    const resetRequestUrl = `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${FIREBASE_WEB_API_KEY}`;
 
-    const otp = otpGenerator.generate(6, {
-      lowerCaseAlphabets: false,
-      upperCaseAlphabets: false,
-      specialChars: false
+    const response = await fetch(resetRequestUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        requestType: 'PASSWORD_RESET'
+      })
     });
 
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    const data = await response.json();
 
-    const passwordReset = new PasswordReset({
-      email: email.toLowerCase(),
-      otp,
-      expiresAt,
-      attempts: 0,
-      used: false
-    });
-    await passwordReset.save();
+    if (!response.ok) {
+      console.error('Firebase password reset error:', data);
+      return res.status(400).json({ error: 'パスワードリセットメールの送信に失敗しました' });
+    }
 
-    await sendPasswordResetEmail(email, otp);
-
+    console.log('Password reset email sent to:', email);
     res.json({
       success: true,
-      message: 'パスワードリセット用の確認コードをメールに送信しました',
-      expiresIn: 15 * 60
+      message: 'パスワードリセット用のメールを送信しました'
     });
   } catch (error) {
     console.error('Forgot password error:', error);
@@ -320,74 +316,43 @@ router.post('/forgot-password', async (req, res) => {
 
 router.post('/reset-password', async (req, res) => {
   try {
-    const { email, otp, newPassword } = req.body;
+    const { oobCode, newPassword } = req.body;
 
-    if (!email || !otp || !newPassword) {
-      return res.status(400).json({ error: 'メールアドレス、確認コード、新しいパスワードが必要です' });
+    if (!oobCode || !newPassword) {
+      return res.status(400).json({ error: 'OOBコードと新しいパスワードが必要です' });
     }
 
-    if (typeof newPassword !== 'string' || newPassword.length < 8) {
+    if (newPassword.length < 8) {
       return res.status(400).json({ error: 'パスワードは8文字以上である必要があります' });
     }
 
-    const passwordReset = await PasswordReset.findOne({
-      email: email.toLowerCase(),
-      used: false
-    }).sort({ createdAt: -1 });
-
-    if (!passwordReset) {
-      return res.status(400).json({
-        error: '確認コードが無効です。再度パスワードリセットを依頼してください。',
-        remainingAttempts: 0
-      });
+    if (!FIREBASE_WEB_API_KEY) {
+      console.error('FIREBASE_WEB_API_KEY is not set');
+      return res.status(500).json({ error: 'サーバー設定エラー' });
     }
 
-    if (passwordReset.used) {
-      return res.status(400).json({ error: 'この確認コードは既に使用されています' });
+    const resetUrl = `https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${FIREBASE_WEB_API_KEY}`;
+
+    const response = await fetch(resetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        oobCode: oobCode,
+        newPassword: newPassword
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Firebase reset password error:', data);
+      const errorMessage = data.error?.message === 'INVALID_OOB_CODE'
+        ? 'このコードは既に無効になっています。もう一度パスワードリセットを依頼してください。'
+        : 'パスワードのリセットに失敗しました';
+      return res.status(400).json({ error: errorMessage });
     }
 
-    if (passwordReset.isExpired()) {
-      await PasswordReset.deleteOne({ _id: passwordReset._id });
-      return res.status(400).json({
-        error: '確認コードの有効期限が切れました。再度パスワードリセットを依頼してください。',
-        expired: true
-      });
-    }
-
-    if (passwordReset.attempts >= 5) {
-      await PasswordReset.deleteOne({ _id: passwordReset._id });
-      return res.status(400).json({
-        error: '入力回数が上限に達しました。再度パスワードリセットを依頼してください。'
-      });
-    }
-
-    passwordReset.attempts += 1;
-    await passwordReset.save();
-
-    if (passwordReset.otp !== otp) {
-      const remainingAttempts = 5 - passwordReset.attempts;
-      if (remainingAttempts <= 0) {
-        await PasswordReset.deleteOne({ _id: passwordReset._id });
-        return res.status(400).json({
-          error: '入力回数が上限に達しました。再度パスワードリセットを依頼してください。'
-        });
-      }
-      return res.status(400).json({
-        error: `確認コードが正しくありません（残り${remainingAttempts}回）`,
-        remainingAttempts
-      });
-    }
-
-    try {
-      await updateUserPassword(email, newPassword);
-    } catch (firebaseError) {
-      console.error('Firebase password update error:', firebaseError);
-      return res.status(500).json({ error: 'パスワードの更新に失敗しました' });
-    }
-
-    passwordReset.used = true;
-    await passwordReset.save();
-
+    console.log('Password reset successfully for:', data.email);
     res.json({
       success: true,
       message: 'パスワードが正常に変更されました'

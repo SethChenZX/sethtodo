@@ -10,14 +10,7 @@ const getApiUrl = () => {
 };
 
 const handleResponse = async (response) => {
-  const text = await response.text();
-  console.log('API Response:', response.status, text);
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`);
-  }
+  const data = await response.json();
   if (!response.ok) {
     const error = new Error(data.error || 'エラーが発生しました');
     error.data = data;

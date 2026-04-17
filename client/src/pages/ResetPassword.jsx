@@ -1,20 +1,25 @@
 import { useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { authApi } from '../utils/api';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [email, setEmail] = useState(searchParams.get('email') || sessionStorage.getItem('resetPasswordEmail') || '');
-  const [otp, setOtp] = useState('');
+  const [oobCode, setOobCode] = useState(searchParams.get('oobCode') || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://dodo-todo-api.onrender.com/api';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!oobCode) {
+      setError('リセットコードが無効です。メール内のリンクをクリックしてください。');
+      return;
+    }
 
     if (newPassword.length < 8) {
       setError('パスワードは8文字以上である必要があります');
@@ -29,7 +34,18 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      await authApi.resetPassword(email, otp, newPassword);
+      const response = await fetch(`${apiUrl}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oobCode, newPassword })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'エラーが発生しました');
+      }
+
       alert('パスワードが正常に変更されました');
       navigate('/login');
     } catch (err) {
@@ -43,17 +59,17 @@ const ResetPassword = () => {
     <div className="login-container">
       <h1>新しいパスワードを設定</h1>
       <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-        メールアドレスに送信された確認コードと、
+        Firebaseから届いたメール内のリンクをクリックして、
         <br />
         新しいパスワードを入力してください。
       </p>
 
       <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '300px' }}>
         <input
-          type="email"
-          placeholder="メールアドレス"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="リセットコード（URLから自動取得）"
+          value={oobCode}
+          onChange={(e) => setOobCode(e.target.value)}
           required
           style={{
             width: '100%',
@@ -62,26 +78,6 @@ const ResetPassword = () => {
             border: '1px solid #ddd',
             borderRadius: '4px',
             fontSize: '14px'
-          }}
-        />
-
-        <input
-          type="text"
-          placeholder="確認コード（6桁）"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          required
-          maxLength={6}
-          pattern="[0-9]{6}"
-          style={{
-            width: '100%',
-            padding: '12px',
-            marginBottom: '10px',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            fontSize: '14px',
-            letterSpacing: '4px',
-            textAlign: 'center'
           }}
         />
 
