@@ -4,11 +4,13 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [oobCode, setOobCode] = useState(searchParams.get('oobCode') || '');
+  const oobCodeFromUrl = searchParams.get('oobCode') || '';
+  const [oobCode, setOobCode] = useState(oobCodeFromUrl);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL || 'https://dodo-todo-api.onrender.com/api';
 
@@ -17,7 +19,7 @@ const ResetPassword = () => {
     setError('');
 
     if (!oobCode) {
-      setError('リセットコードが無効です。メール内のリンクをクリックしてください。');
+      setError('リセットコードが無効です');
       return;
     }
 
@@ -46,8 +48,7 @@ const ResetPassword = () => {
         throw new Error(data.error || 'エラーが発生しました');
       }
 
-      alert('パスワードが正常に変更されました');
-      navigate('/login');
+      setSuccess(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -55,19 +56,44 @@ const ResetPassword = () => {
     }
   };
 
+  if (success) {
+    return (
+      <div className="login-container">
+        <h1>パスワード変更完了</h1>
+        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
+          パスワードが正常に変更されました。
+        </p>
+        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
+          新しいパスワードでログインしてください。
+        </p>
+        <button
+          onClick={() => navigate('/login')}
+          className="btn btn-primary"
+          style={{
+            width: '100%',
+            padding: '12px',
+            fontSize: '16px'
+          }}
+        >
+          ログイン画面へ
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="login-container">
       <h1>新しいパスワードを設定</h1>
       <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-        Firebaseから届いたメール内のリンクをクリックして、
+        Firebaseから届いたメールに記載された
         <br />
-        新しいパスワードを入力してください。
+        リセットコードを貼り付けてください。
       </p>
 
       <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '300px' }}>
         <input
           type="text"
-          placeholder="リセットコード（URLから自動取得）"
+          placeholder="リセットコード（必須）"
           value={oobCode}
           onChange={(e) => setOobCode(e.target.value)}
           required

@@ -1,12 +1,12 @@
 const getApiUrl = () => {
   const hostname = window.location.hostname;
   const isLocalNetwork = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.');
-  
+
   if (isLocalNetwork) {
     return import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
   }
-  
-  return import.meta.env.VITE_API_URL || 'https://dodo-todo-api.onrender.com/api';
+
+  return 'https://dodo-todo-api.onrender.com/api';
 };
 
 const handleResponse = async (response) => {

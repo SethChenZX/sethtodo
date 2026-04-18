@@ -6,7 +6,6 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -16,49 +15,13 @@ const ForgotPassword = () => {
 
     try {
       await authApi.forgotPassword(email);
-      sessionStorage.setItem('resetPasswordEmail', email);
-      setSuccess(true);
+      navigate('/login');
     } catch (err) {
       console.error('Forgot password error:', err);
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="login-container">
-        <h1>パスワードリセット</h1>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          確認コードをメールアドレスに送信しました。
-        </p>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          メールに記載された確認コードを使用して、
-          <br />
-          新しいパスワードを設定してください。
-        </p>
-        <button
-          onClick={() => navigate('/reset-password')}
-          className="btn btn-primary"
-          style={{
-            width: '100%',
-            maxWidth: '300px',
-            padding: '12px',
-            fontSize: '16px'
-          }}
-        >
-          新しいパスワードを設定
-        </button>
-        <p style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
-          メールが届かない場合は、迷惑メールフォルダをご確認ください。
-        </p>
-        <p style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
-          <Link to="/login" style={{ color: '#4a90d9' }}>ログイン画面に戻る</Link>
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="login-container">
@@ -66,7 +29,7 @@ const ForgotPassword = () => {
       <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
         登録したメールアドレスを入力してください。
         <br />
-        パスワードリセット用の確認コードを送信します。
+        パスワードリセット用のメールを送信します。
       </p>
 
       <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '300px' }}>
@@ -102,7 +65,7 @@ const ForgotPassword = () => {
             fontSize: '16px'
           }}
         >
-          {loading ? '送信中...' : '確認コードを送信'}
+          {loading ? '送信中...' : 'パスワードを送信'}
         </button>
       </form>
 
