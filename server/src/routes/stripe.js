@@ -54,7 +54,7 @@ router.post('/create-checkout-session', async (req, res) => {
         price: process.env.STRIPE_PRICE_ID,
         quantity: 1
       }],
-      mode: 'subscription',
+      mode: 'payment',
       success_url: `${CLIENT_URL}/subscription?success=true`,
       cancel_url: `${CLIENT_URL}/subscription?canceled=true`,
       metadata: { firebaseUid }
@@ -143,11 +143,10 @@ router.post('/webhook', async (req, res) => {
         const session = event.data.object;
         const firebaseUid = session.metadata?.firebaseUid;
 
-        if (firebaseUid && session.subscription) {
+        if (firebaseUid) {
           await User.findOneAndUpdate(
             { firebaseUid },
             {
-              subscriptionId: session.subscription,
               subscriptionStatus: 'active',
               subscriptionPlan: 'pro'
             }
