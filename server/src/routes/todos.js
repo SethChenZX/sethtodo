@@ -139,7 +139,24 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-  res.status(403).json({ error: 'Delete not allowed for normal users' });
+  try {
+    const user = await User.findOne({ firebaseUid: req.user.uid });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (user.subscriptionStatus !== 'active') {
+      return res.status(403).json({ error: 'Delete not allowed. Only Pro users can delete todos.' });
+    }
+
+    const todo = await Todo.findOne({ _id: req.params.id, userId: user._id, isDeleted: false });
+    if (!todo) return res.status(404).json({ error: 'Todo not found' });
+
+    todo.isDeleted = true;
+    await todo.save();
+
+    res.json({ message: 'Todo deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 export default router;

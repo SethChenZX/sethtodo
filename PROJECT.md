@@ -1096,14 +1096,16 @@ STRIPE_PRICE_YEARLY=price_...
 | 項目 | ステータス |
 |------|-----------|
 | Userモデル更新（server） | ✅ 完了 |
-| Userモデル更新（functions） | ✅ 完了 |
+| Userモデル更新（functions） | ⚠️ 要確認（subscription字段缺失） |
 | 削除権限チェック（server） | ✅ 完了 |
 | 削除権限チェック（functions） | ✅ 完了 |
 | サブスクAPI実装（Stripeルート） | ✅ 完了 |
-| Stripe設定 | ✅ 完了 |
-| フロントエンド削除ボタン | ⏳ 未着手 |
-| Pricingページ | ⏳ 未着手 |
-| Subscriptionページ | ⏳ 未着手 |
+| Stripe設定 | ⚠️ 環境変数未設定 |
+| フロントエンド削除ボタン | ✅ 完了 |
+| Pricingページ | ✅ 完了 |
+| Subscriptionページ | ✅ 完了 |
+| SubscriptionContext | ✅ 完了 |
+| SubscriptionBadge | ✅ 完了 |
 | PROJECT.md更新 | ✅ 完了 |
 
 #### 実装ファイル
@@ -1112,21 +1114,25 @@ STRIPE_PRICE_YEARLY=price_...
 server/
 ├── src/models/User.js              # ✅ subscriptionフィールド追加済み
 ├── src/routes/stripe.js            # ✅ Stripeルート実装済み
-└── src/utils/subscription.js      # ✅ isProUser, getProUserEmails実装済み
-```
+├── src/utils/subscription.js      # ✅ isProUser, getProUserEmails実装済み
+└── src/utils/email.js             # ✅ getProUserEmails使用済み
 
-#### 未実装ファイル（フロントエンド）
-
-```
 client/
 ├── src/context/
-│   └── SubscriptionContext.jsx    # ⏳ 要実装
+│   └── SubscriptionContext.jsx    # ✅ 完了
 ├── src/pages/
-│   ├── Pricing.jsx                 # ⏳ 要実装
-│   └── Subscription.jsx           # ⏳ 要実装
+│   ├── Pricing.jsx                 # ✅ 完了
+│   └── Subscription.jsx           # ✅ 完了
 ├── src/components/
-│   └── SubscriptionBadge.jsx       # ⏳ 要実装
-└── src/App.jsx                    # ⏳ ルーティング追加要
+│   └── SubscriptionBadge.jsx       # ✅ 完了
+└── src/pages/Dashboard.jsx        # ✅ 削除ボタン・Pro機能統合済み
+```
+
+#### 未完了・問題点
+
+1. **Functions Userモデル** - subscription字段缺失（serverと同じにする必要あり）
+2. **Stripe環境変数** - `.env`に`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID`の設定が必要
+3. ** PROJECT_STATUS.md** - こちらにも同样的な記載があり、更新が必要
 
 #### 今後の予定
 1. Stripeアカウント設定（テストモード）

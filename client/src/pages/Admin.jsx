@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSubscription } from '../context/SubscriptionContext';
 import { adminApi } from '../utils/todoApi';
 
 const formatDate = (dateString) => {
@@ -43,6 +45,8 @@ const checkAndMarkOverdue = (todos) => {
 
 const Admin = () => {
   const { user, logout } = useAuth();
+  const { isPro } = useSubscription();
+  const navigate = useNavigate();
   const [allTodos, setAllTodos] = useState([]);
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('all');
@@ -173,7 +177,18 @@ const Admin = () => {
     <div className="app">
       <div className="header">
         <h1>Admin Panel</h1>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {!isPro && (
+            <button className="btn btn-secondary" onClick={() => navigate('/pricing')}>
+              アップグレード
+            </button>
+          )}
+          <button className="btn btn-secondary" onClick={() => navigate('/subscription')}>
+            サブスク
+          </button>
+          <button className="btn btn-secondary" onClick={() => navigate('/')}>
+            Dashboard
+          </button>
           <span style={{ marginRight: '10px' }}>{user.email}</span>
           <button className="btn btn-danger" onClick={logout}>Logout</button>
         </div>

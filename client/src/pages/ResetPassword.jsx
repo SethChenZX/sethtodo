@@ -10,7 +10,6 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL || 'https://dodo-todo-api.onrender.com/api';
 
@@ -48,38 +47,17 @@ const ResetPassword = () => {
         throw new Error(data.error || 'エラーが発生しました');
       }
 
-      setSuccess(true);
+      if (response.ok) {
+        navigate('/login');
+      } else {
+        throw new Error(data.error || 'エラーが発生しました');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="login-container">
-        <h1>パスワード変更完了</h1>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          パスワードが正常に変更されました。
-        </p>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          新しいパスワードでログインしてください。
-        </p>
-        <button
-          onClick={() => navigate('/login')}
-          className="btn btn-primary"
-          style={{
-            width: '100%',
-            padding: '12px',
-            fontSize: '16px'
-          }}
-        >
-          ログイン画面へ
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="login-container">

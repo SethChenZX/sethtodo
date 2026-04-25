@@ -1,6 +1,6 @@
 # Dodo Todo App - プロジェクト進行状況
 
-**最終更新**: 2026年3月27日 (ユーザー名表示機能 + Todo作成通知機能削除)
+**最終更新**: 2026年4月25日 (サブスクリプション機能更新)
 
 ## 📊 プロジェクト概要
 
@@ -108,6 +108,27 @@
   - 本物メールアドレス持有者のSuperユーザーのみ受信
   - メール内容：作成者名、タイトル、説明文
 
+### 💳 サブスクリプション機能 (2026-04-25)
+#### 完了済み
+- [x] Userモデル更新（server/src/models/User.js）
+  - subscription字段: plan, status, currentPeriodEnd, stripeCustomerId, stripeSubscriptionId
+- [x] Stripe APIルート実装（server/src/routes/stripe.js）
+  - /api/stripe/create-checkout-session
+  - /api/stripe/create-portal-session
+  - /api/stripe/subscription-status
+  - /api/stripe/webhook
+- [x] 削除権限チェック（server/src/routes/todos.js）
+  - subscriptionStatus !== 'active' のユーザーに403返す
+- [x] SubscriptionContext（client/src/context/SubscriptionContext.jsx）
+- [x] Pricingページ（client/src/pages/Pricing.jsx）
+- [x] Subscription管理ページ（client/src/pages/Subscription.jsx）
+- [x] SubscriptionBadge组件（client/src/components/SubscriptionBadge.jsx）
+- [x] Dashboard.jsx - Proユーザー削除ボタン統合
+
+#### 未完了・問題点
+- [ ] Functions Userモデルにsubscription字段缺失
+- [ ] Stripe環境変数未設定（STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_ID）
+
 ## 🔄 現在の認証方法
 
 - **本番**: Firebase Auth
@@ -122,12 +143,17 @@ todo/
 ├── client/                         # React + Vite フロントエンド
 │   ├── src/
 │   │   ├── context/
-│   │   │   └── AuthContext.jsx    # Firebase Auth コンテキスト
+│   │   │   ├── AuthContext.jsx    # Firebase Auth コンテキスト
+│   │   │   └── SubscriptionContext.jsx  # サブスク状態管理
 │   │   ├── pages/
 │   │   │   ├── Login.jsx         # ログイン画面
 │   │   │   ├── SelectRole.jsx    # 役割選択画面
 │   │   │   ├── Dashboard.jsx      # ダッシュボード
-│   │   │   └── Admin.jsx         # 管理パネル
+│   │   │   ├── Admin.jsx         # 管理パネル
+│   │   │   ├── Pricing.jsx       # 料金プランページ
+│   │   │   └── Subscription.jsx  # サブスク管理ページ
+│   │   ├── components/
+│   │   │   └── SubscriptionBadge.jsx  # Premiumバッジ
 │   │   ├── utils/
 │   │   │   ├── api.js            # APIユーティリティ
 │   │   │   └── notifications.js  # 通知ユーティリティ
@@ -142,11 +168,12 @@ todo/
 │   ├── src/
 │   │   ├── models/
 │   │   │   ├── Todo.js          # Todoモデル
-│   │   │   └── User.js          # Userモデル
+│   │   │   └── User.js          # Userモデル ⚠️ subscription字段缺失
 │   │   ├── routes/
 │   │   │   ├── todos.js         # Todo CRUD
 │   │   │   ├── auth.js          # 認証・役割管理
-│   │   │   └── admin.js         # 管理機能
+│   │   │   ├── admin.js         # 管理機能
+│   │   │   └── stripe.js        # ⚠️ 要追加（現在serverのみ）
 │   │   ├── middleware/
 │   │   │   └── firebaseAuth.js   # Firebase Auth検証
 │   │   └── index.js             # Functionsエントリ
@@ -155,7 +182,15 @@ todo/
 │   └── .firebaserc              # Firebaseプロジェクト
 │
 ├── server/                        # Express バックエンド（ローカル開発用）
-│   └── ...
+│   └── src/
+│       ├── models/
+│       │   └── User.js          # Userモデル ✅ subscription字段追加済み
+│       ├── routes/
+│       │   ├── stripe.js        # ✅ Stripeルート実装済み
+│       │   └── todos.js         # ✅ 削除権限チェック追加済み
+│       └── utils/
+│           ├── subscription.js  # ✅ isProUser, getProUserEmails
+│           └── email.js         # ✅ getProUserEmails使用済み
 │
 ├── PROJECT_STATUS.md              # このファイル
 └── PROJECT.md                     # 詳細なドキュメント

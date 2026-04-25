@@ -66,4 +66,29 @@ export const authApi = {
   }
 };
 
+export const subscriptionApi = {
+  createCheckoutSession: async (firebaseUid, email) => {
+    const response = await fetch(`${getApiUrl()}/stripe/create-checkout-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firebaseUid, email })
+    });
+    return handleResponse(response);
+  },
+
+  createPortalSession: async (firebaseUid) => {
+    const response = await fetch(`${getApiUrl()}/stripe/create-portal-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firebaseUid })
+    });
+    return handleResponse(response);
+  },
+
+  getStatus: async (firebaseUid) => {
+    const response = await fetch(`${getApiUrl()}/stripe/subscription-status?firebaseUid=${firebaseUid}`);
+    return handleResponse(response);
+  }
+};
+
 export { getApiUrl };

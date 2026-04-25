@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSubscription } from '../context/SubscriptionContext';
 import { todoApi } from '../utils/todoApi';
 import { userApi } from '../utils/userApi';
 import { requestNotificationPermission, showBrowserNotification, shouldShowReminder } from '../utils/notifications';
+import SubscriptionBadge from '../components/SubscriptionBadge';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -51,6 +53,7 @@ const checkAndMarkOverdue = (todos) => {
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const { isPro } = useSubscription();
   const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
@@ -219,6 +222,15 @@ const Dashboard = () => {
     fetchTodos();
   };
 
+  const deleteTodo = async (id) => {
+    if (!window.confirm('このTodoを削除しますか？この操作は取り消せません。')) {
+      return;
+    }
+    const token = await user.getIdToken();
+    await todoApi.delete(id, token);
+    fetchTodos();
+  };
+
   const getCompletedMonthKey = (todo) => {
     if (!todo.completedAt) return 'unknown';
     const date = new Date(todo.completedAt);
@@ -273,13 +285,22 @@ const Dashboard = () => {
       <div className="header">
         <h1>My Todos</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {!isPro && (
+            <button className="btn btn-secondary" onClick={() => navigate('/pricing')}>
+              アップグレード
+            </button>
+          )}
           {user.role === 'super' && (
             <button className="btn btn-secondary" onClick={() => navigate('/admin')}>
               Admin
             </button>
           )}
           <span style={{ margin: '0 10px', fontWeight: 'bold' }}>{user.displayName}</span>
+          <SubscriptionBadge />
           <span style={{ color: '#666', fontSize: '14px' }}>({user.email})</span>
+          <button className="btn btn-secondary" onClick={() => navigate('/subscription')}>
+            サブスク
+          </button>
           <button className="btn btn-danger" onClick={logout}>Logout</button>
         </div>
       </div>
@@ -428,9 +449,14 @@ const Dashboard = () => {
                       Delay
                     </button>
                   )}
+                  {isPro && (
+                    <button className="btn btn-danger" onClick={() => deleteTodo(getTodoId(todo))}>
+                      Delete
+                    </button>
+                  )}
                 </>
               )}
-              {(todo.status === 'pending' || todo.status === 'overdue') && (
+              {(todo.status === 'pending' || todo.status === 'overdue') && !isPro && (
                 <button className="btn btn-danger" onClick={() => updateTodo(getTodoId(todo), 'abandoned')}>
                   Give Up
                 </button>
@@ -438,6 +464,11 @@ const Dashboard = () => {
               {(todo.status === 'delayed' || todo.status === 'abandoned') && (
                 <button className="btn btn-primary" onClick={() => updateTodo(getTodoId(todo), 'pending')}>
                   Restore
+                </button>
+              )}
+              {isPro && (todo.status === 'delayed' || todo.status === 'abandoned') && (
+                <button className="btn btn-danger" onClick={() => deleteTodo(getTodoId(todo))}>
+                  Delete
                 </button>
               )}
             </div>

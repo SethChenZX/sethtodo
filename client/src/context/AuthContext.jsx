@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { signOut } from 'firebase/auth';
-import { auth as firebaseAuth } from '../firebase';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth as firebaseAuth, app as firebaseApp } from '../firebase';
 import { userApi } from '../utils/userApi';
 
 const AuthContext = createContext();
@@ -12,19 +12,44 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem(SESSION_KEY);
-    if (saved) {
+    const initAuth = async () => {
       try {
-        const data = JSON.parse(saved);
-        setUser(data);
-        if (data.token) {
-          localStorage.setItem('firebase_token', data.token);
+        const saved = sessionStorage.getItem(SESSION_KEY);
+        if (saved) {
+          const data = JSON.parse(saved);
+          if (data.token) {
+            localStorage.setItem('firebase_token', data.token);
+          }
+          if (data.uid && data.email) {
+            const { getAuth } = await import('firebase/auth');
+            const auth = getAuth(firebaseApp);
+            return new Promise((resolve) => {
+              onAuthStateChanged(auth, (firebaseUser) => {
+                if (firebaseUser && firebaseUser.uid === data.uid) {
+                  const finalUser = {
+                    uid: firebaseUser.uid,
+                    email: firebaseUser.email,
+                    displayName: data.displayName,
+                    role: data.role,
+                    token: data.token,
+                    getIdToken: () => firebaseUser.getIdToken()
+                  };
+                  setUser(finalUser);
+                } else {
+                  sessionStorage.removeItem(SESSION_KEY);
+                }
+                resolve();
+              });
+            });
+          }
         }
       } catch (e) {
+        console.error('Auth init error:', e);
         sessionStorage.removeItem(SESSION_KEY);
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+    initAuth();
   }, []);
 
   useEffect(() => {
