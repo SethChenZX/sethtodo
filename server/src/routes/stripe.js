@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import User from '../models/User.js';
-import Stripe from 'stripe';
 
 const router = Router();
 
@@ -8,7 +7,12 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
-const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+let stripe = null;
+if (STRIPE_SECRET_KEY) {
+  import('stripe').then(({ default: Stripe }) => {
+    stripe = new Stripe(STRIPE_SECRET_KEY);
+  });
+}
 
 if (!STRIPE_SECRET_KEY) {
   console.warn('STRIPE_SECRET_KEY is not set. Stripe features will be disabled.');
