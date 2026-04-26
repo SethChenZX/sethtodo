@@ -5,23 +5,30 @@ import { useSubscription } from '../context/SubscriptionContext';
 
 const Subscription = () => {
   const { user } = useAuth();
-  const { subscription, isPro, loading, fetchSubscriptionStatus, openBillingPortal } = useSubscription();
+  const { subscription, isPro, fetchSubscriptionStatus, openBillingPortal } = useSubscription();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [processing, setProcessing] = useState(false);
-  const [initialized, setInitialized] = useState(false);
+  const [localLoading, setLocalLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
-      await fetchSubscriptionStatus();
-      setInitialized(true);
+      try {
+        await fetchSubscriptionStatus();
+      } catch (e) {
+        console.error('Failed to fetch subscription:', e);
+      }
+      setLocalLoading(false);
     };
-    init();
-  }, []);
+    
+    const timeout = setTimeout(() => {
+      setLocalLoading(false);
+    }, 5000);
+    
+    init().finally(() => clearTimeout(timeout));
+  }, [fetchSubscriptionStatus]);
 
   useEffect(() => {
-    if (!initialized) return;
-
     const success = searchParams.get('success');
     const canceled = searchParams.get('canceled');
 
@@ -32,7 +39,7 @@ const Subscription = () => {
       alert('サブスクリプションの作成がキャンセルされました。');
       navigate('/subscription', { replace: true });
     }
-  }, [initialized, searchParams, navigate]);
+  }, [searchParams, navigate]);
 
   const handleDashboardReturn = () => {
     navigate('/');
@@ -92,9 +99,9 @@ const Subscription = () => {
           </button>
         </div>
 
-        {loading && !initialized && <div className="loading">読み込み中...</div>}
+        {localLoading && <div className="loading">読み込み中...</div>}
 
-        {(initialized && !loading) && (
+        {!localLoading && (
           <div className="subscription-content">
             {isPro ? (
               <div className="subscription-card pro">
