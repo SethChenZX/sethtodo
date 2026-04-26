@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+useEffect(() => {
     const initAuth = async () => {
       try {
         const saved = sessionStorage.getItem(SESSION_KEY);
@@ -21,26 +21,39 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('firebase_token', data.token);
           }
           if (data.uid && data.email) {
-            const { getAuth } = await import('firebase/auth');
-            const auth = getAuth(firebaseApp);
-            return new Promise((resolve) => {
-              onAuthStateChanged(auth, (firebaseUser) => {
-                if (firebaseUser && firebaseUser.uid === data.uid) {
-                  const finalUser = {
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email,
-                    displayName: data.displayName,
-                    role: data.role,
-                    token: data.token,
-                    getIdToken: () => firebaseUser.getIdToken()
-                  };
-                  setUser(finalUser);
-                } else {
+            try {
+              const { getAuth } = await import('firebase/auth');
+              const auth = getAuth(firebaseApp);
+              return new Promise((resolve) => {
+                const timeout = setTimeout(() => {
+                  console.log('Auth timeout - clearing session');
                   sessionStorage.removeItem(SESSION_KEY);
-                }
-                resolve();
+                  resolve();
+                }, 8000);
+                
+                onAuthStateChanged(auth, (firebaseUser) => {
+                  clearTimeout(timeout);
+                  if (firebaseUser && firebaseUser.uid === data.uid) {
+                    const finalUser = {
+                      uid: firebaseUser.uid,
+                      email: firebaseUser.email,
+                      displayName: firebaseUser.displayName || data.displayName,
+                      role: data.role,
+                      token: data.token,
+                      getIdToken: () => firebaseUser.getIdToken()
+                    };
+                    setUser(finalUser);
+                  } else {
+                    console.log('Firebase user mismatch or null - clearing session');
+                    sessionStorage.removeItem(SESSION_KEY);
+                  }
+                  resolve();
+                });
               });
-            });
+            } catch (authError) {
+              console.error('Firebase auth error:', authError);
+              sessionStorage.removeItem(SESSION_KEY);
+            }
           }
         }
       } catch (e) {
