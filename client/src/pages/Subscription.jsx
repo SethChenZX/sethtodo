@@ -9,23 +9,34 @@ const Subscription = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [processing, setProcessing] = useState(false);
-  const [localLoading, setLocalLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    const init = async () => {
+    let cancelled = false;
+    
+    const loadSubscription = async () => {
       try {
         await fetchSubscriptionStatus();
       } catch (e) {
         console.error('Failed to fetch subscription:', e);
       }
-      setLocalLoading(false);
+      if (!cancelled) {
+        setShowContent(true);
+      }
     };
     
-    const timeout = setTimeout(() => {
-      setLocalLoading(false);
+    loadSubscription();
+    
+    const timer = setTimeout(() => {
+      if (!cancelled) {
+        setShowContent(true);
+      }
     }, 5000);
     
-    init().finally(() => clearTimeout(timeout));
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [fetchSubscriptionStatus]);
 
   useEffect(() => {
@@ -99,9 +110,9 @@ const Subscription = () => {
           </button>
         </div>
 
-        {localLoading && <div className="loading">読み込み中...</div>}
+        {!showContent && <div className="loading">読み込み中...</div>}
 
-        {!localLoading && (
+        {showContent && (
           <div className="subscription-content">
             {isPro ? (
               <div className="subscription-card pro">
