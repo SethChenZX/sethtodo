@@ -13,6 +13,7 @@ const Subscription = () => {
 
   useEffect(() => {
     let cancelled = false;
+    let timer = null;
     
     const loadSubscription = async () => {
       try {
@@ -27,7 +28,7 @@ const Subscription = () => {
     
     loadSubscription();
     
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
       if (!cancelled) {
         setShowContent(true);
       }
@@ -35,7 +36,7 @@ const Subscription = () => {
     
     return () => {
       cancelled = true;
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
     };
   }, [fetchSubscriptionStatus]);
 
@@ -43,16 +44,19 @@ const Subscription = () => {
     const success = searchParams.get('success');
     const canceled = searchParams.get('canceled');
 
-    if (success === 'true') {
-      alert('サブスクリプションが正常に開始されました！');
-      navigate('/subscription', { replace: true });
-    } else if (canceled === 'true') {
-      alert('サブスクリプションの作成がキャンセルされました。');
+    if (success === 'true' || canceled === 'true') {
+      setShowContent(true);
+      if (canceled === 'true') {
+        alert('サブスクリプションの作成がキャンセルされました。');
+      } else if (success === 'true') {
+        alert('サブスクリプションが正常に開始されました！');
+      }
       navigate('/subscription', { replace: true });
     }
   }, [searchParams, navigate]);
 
   const handleDashboardReturn = () => {
+    setShowContent(true);
     navigate('/');
   };
 
