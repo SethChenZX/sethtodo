@@ -80,7 +80,7 @@ const Pricing = () => {
           <div className="pricing-card pro">
             <div className="popular-badge">おすすめ</div>
             <h3>Proプラン</h3>
-            <div className="price">¥980<span>/月</span></div>
+            <div className="price">¥50<span>/回</span></div>
             <ul className="features">
               <li>Todoの削除機能</li>
               <li>すべてのFreeプラン機能</li>
@@ -99,7 +99,7 @@ const Pricing = () => {
 
         <div className="pricing-note">
           <p>※ サブスクリプションはStripeによって安全に処理されます</p>
-          <p>※ 月間980円で、すべてのプレミアム機能がご利用可能です</p>
+          <p>※ 50円で、すべてのプレミアム機能がご利用可能です</p>
         </div>
       </div>
 
