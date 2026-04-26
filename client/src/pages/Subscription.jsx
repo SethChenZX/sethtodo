@@ -9,14 +9,19 @@ const Subscription = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [processing, setProcessing] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (fetchSubscriptionStatus) {
-      fetchSubscriptionStatus();
-    }
+    const init = async () => {
+      await fetchSubscriptionStatus();
+      setInitialized(true);
+    };
+    init();
   }, []);
 
   useEffect(() => {
+    if (!initialized) return;
+
     const success = searchParams.get('success');
     const canceled = searchParams.get('canceled');
 
@@ -27,7 +32,11 @@ const Subscription = () => {
       alert('サブスクリプションの作成がキャンセルされました。');
       navigate('/subscription', { replace: true });
     }
-  }, [searchParams, navigate, fetchSubscriptionStatus]);
+  }, [initialized, searchParams, navigate]);
+
+  const handleDashboardReturn = () => {
+    navigate('/');
+  };
 
   const handleManageBilling = async () => {
     setProcessing(true);
@@ -78,14 +87,14 @@ const Subscription = () => {
       <div className="subscription-container">
         <div className="subscription-header">
           <h1>サブスクリプション</h1>
-          <button className="btn btn-secondary" onClick={() => navigate('/')}>
+          <button className="btn btn-secondary" onClick={handleDashboardReturn}>
             ダッシュボードに戻る
           </button>
         </div>
 
-        {loading && <div className="loading">読み込み中...</div>}
+        {loading && !initialized && <div className="loading">読み込み中...</div>}
 
-        {!loading && (
+        {(initialized && !loading) && (
           <div className="subscription-content">
             {isPro ? (
               <div className="subscription-card pro">
