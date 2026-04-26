@@ -9,54 +9,22 @@ const Subscription = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [processing, setProcessing] = useState(false);
-  const [showContent, setShowContent] = useState(false);
+
+  const hasSearchParams = searchParams.get('success') || searchParams.get('canceled');
 
   useEffect(() => {
-    let cancelled = false;
-    let timer = null;
-    
-    const loadSubscription = async () => {
-      try {
-        await fetchSubscriptionStatus();
-      } catch (e) {
-        console.error('Failed to fetch subscription:', e);
-      }
-      if (!cancelled) {
-        setShowContent(true);
-      }
-    };
-    
-    loadSubscription();
-    
-    timer = setTimeout(() => {
-      if (!cancelled) {
-        setShowContent(true);
-      }
-    }, 5000);
-    
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-    };
-  }, [fetchSubscriptionStatus]);
-
-  useEffect(() => {
-    const success = searchParams.get('success');
-    const canceled = searchParams.get('canceled');
-
-    if (success === 'true' || canceled === 'true') {
-      setShowContent(true);
-      if (canceled === 'true') {
-        alert('サブスクリプションの作成がキャンセルされました。');
-      } else if (success === 'true') {
+    if (hasSearchParams) {
+      if (searchParams.get('success') === 'true') {
         alert('サブスクリプションが正常に開始されました！');
+        navigate('/subscription?success=true', { replace: true });
+      } else if (searchParams.get('canceled') === 'true') {
+        alert('サブスクリプションの作成がキャンセルされました。');
+        navigate('/subscription', { replace: true });
       }
-      navigate('/subscription', { replace: true });
     }
-  }, [searchParams, navigate]);
+  }, [hasSearchParams, navigate, searchParams]);
 
   const handleDashboardReturn = () => {
-    setShowContent(true);
     navigate('/');
   };
 
@@ -114,10 +82,7 @@ const Subscription = () => {
           </button>
         </div>
 
-        {!showContent && <div className="loading">読み込み中...</div>}
-
-        {showContent && (
-          <div className="subscription-content">
+        <div className="subscription-content">
             {isPro ? (
               <div className="subscription-card pro">
                 <div className="plan-info">
@@ -194,8 +159,7 @@ const Subscription = () => {
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
 
       <style>{`
         .subscription-container {

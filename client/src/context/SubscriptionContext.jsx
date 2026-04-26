@@ -15,23 +15,13 @@ export const SubscriptionProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchSubscriptionStatus = async () => {
+  const fetchSubscriptionStatusRef = async () => {
     if (!user) {
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
-    setError(null);
-    
-    const timeoutId = setTimeout(() => {
-      setLoading(false);
-      setError('タイムアウトしました');
-    }, 10000);
-
     try {
       const status = await subscriptionApi.getStatus(user.uid);
-      clearTimeout(timeoutId);
       setSubscription({
         isPro: status.isPro,
         subscriptionStatus: status.subscriptionStatus,
@@ -39,31 +29,17 @@ export const SubscriptionProvider = ({ children }) => {
         subscriptionCurrentPeriodEnd: status.subscriptionCurrentPeriodEnd
       });
     } catch (err) {
-      clearTimeout(timeoutId);
       console.error('Error fetching subscription status:', err);
-      setError(err.message);
-      setSubscription({
-        isPro: false,
-        subscriptionStatus: null,
-        subscriptionPlan: null,
-        subscriptionCurrentPeriodEnd: null
-      });
-    } finally {
-      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (user) {
-      fetchSubscriptionStatus();
-    }
-  }, [user]);
+  const fetchSubscriptionStatus = async () => {
+    await fetchSubscriptionStatusRef();
+  };
 
   const startCheckout = async () => {
     if (!user) return null;
 
-    setLoading(true);
-    setError(null);
     try {
       const { url } = await subscriptionApi.createCheckoutSession(user.uid, user.email);
       return url;
@@ -71,16 +47,12 @@ export const SubscriptionProvider = ({ children }) => {
       console.error('Error starting checkout:', err);
       setError(err.message);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
   const openBillingPortal = async () => {
     if (!user) return null;
 
-    setLoading(true);
-    setError(null);
     try {
       const { url } = await subscriptionApi.createPortalSession(user.uid);
       return url;
@@ -88,8 +60,6 @@ export const SubscriptionProvider = ({ children }) => {
       console.error('Error opening billing portal:', err);
       setError(err.message);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
