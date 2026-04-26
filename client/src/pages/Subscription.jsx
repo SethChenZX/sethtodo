@@ -11,7 +11,9 @@ const Subscription = () => {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    fetchSubscriptionStatus();
+    if (fetchSubscriptionStatus) {
+      fetchSubscriptionStatus();
+    }
   }, []);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ const Subscription = () => {
       alert('サブスクリプションの作成がキャンセルされました。');
       navigate('/subscription', { replace: true });
     }
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, fetchSubscriptionStatus]);
 
   const handleManageBilling = async () => {
     setProcessing(true);

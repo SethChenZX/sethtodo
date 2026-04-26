@@ -16,12 +16,22 @@ export const SubscriptionProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const fetchSubscriptionStatus = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError(null);
+    
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setError('タイムアウトしました');
+    }, 10000);
+
     try {
       const status = await subscriptionApi.getStatus(user.uid);
+      clearTimeout(timeoutId);
       setSubscription({
         isPro: status.isPro,
         subscriptionStatus: status.subscriptionStatus,
@@ -29,8 +39,15 @@ export const SubscriptionProvider = ({ children }) => {
         subscriptionCurrentPeriodEnd: status.subscriptionCurrentPeriodEnd
       });
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error('Error fetching subscription status:', err);
       setError(err.message);
+      setSubscription({
+        isPro: false,
+        subscriptionStatus: null,
+        subscriptionPlan: null,
+        subscriptionCurrentPeriodEnd: null
+      });
     } finally {
       setLoading(false);
     }
