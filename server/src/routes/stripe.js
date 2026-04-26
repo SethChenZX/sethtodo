@@ -5,7 +5,7 @@ const router = Router();
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const CLIENT_URL = process.env.CLIENT_URL || 'https://todo.cshrpro.com';
 
 let stripe = null;
 if (STRIPE_SECRET_KEY) {
