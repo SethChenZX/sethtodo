@@ -69,9 +69,15 @@ const Dashboard = () => {
   const [reminderNotification, setReminderNotification] = useState(null);
   const [estimatedTime, setEstimatedTime] = useState('');
   const [actualTime, setActualTime] = useState('');
+  const [error, setError] = useState('');
 
   const fetchTodos = async () => {
+    if (!user || typeof user.getIdToken !== 'function') {
+      console.warn('[Dashboard] user or getIdToken not available, skipping fetchTodos');
+      return;
+    }
     try {
+      setError('');
       const token = await user.getIdToken();
       const userData = await userApi.getMe(user.uid, token);
       
@@ -88,6 +94,7 @@ const Dashboard = () => {
       checkReminders(userTodos);
     } catch (error) {
       console.error('Error fetching todos:', error);
+      setError('データの取得に失敗しました。ページを更新してみてください。');
     }
   };
 
@@ -304,6 +311,19 @@ const Dashboard = () => {
           <button className="btn btn-danger" onClick={logout}>Logout</button>
         </div>
       </div>
+
+      {error && (
+        <div style={{
+          background: '#ffebee',
+          color: '#d32f2f',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          fontSize: '14px'
+        }}>
+          {error}
+        </div>
+      )}
 
       <form className="todo-form" onSubmit={createTodo}>
         <input

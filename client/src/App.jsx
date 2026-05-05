@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
@@ -10,9 +11,36 @@ import ResetPassword from './pages/ResetPassword';
 import Pricing from './pages/Pricing';
 import Subscription from './pages/Subscription';
 
+const LoadingFallback = () => {
+  const [showRetry, setShowRetry] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowRetry(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+  return (
+    <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+      <div>Loading...</div>
+      {showRetry && (
+        <div style={{ marginTop: '20px' }}>
+          <p style={{ color: '#d32f2f', fontSize: '14px' }}>
+            読み込みに時間がかかっています。
+          </p>
+          <button
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+            style={{ marginTop: '10px' }}
+          >
+            ページを再読み込み
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingFallback />;
   if (!user) return <Navigate to="/login" />;
   if (!user.role) return <Navigate to="/select-role" />;
   if (user.role === 'super') return <Navigate to="/admin" />;
@@ -21,7 +49,7 @@ const ProtectedRoute = ({ children }) => {
 
 const SuperUserRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingFallback />;
   if (!user) return <Navigate to="/login" />;
   if (!user.role) return <Navigate to="/select-role" />;
   if (user.role !== 'super') return <Navigate to="/" />;
@@ -30,7 +58,7 @@ const SuperUserRoute = ({ children }) => {
 
 const SelectRoleRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingFallback />;
   if (!user) return <Navigate to="/login" />;
   if (user.role) return <Navigate to="/" />;
   return children;

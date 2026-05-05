@@ -1,12 +1,12 @@
-import { getApiUrl } from './api';
+import { getApiUrl, fetchWithTimeout } from './api';
 
 export const userApi = {
   async verify(firebaseUid, email, role, name) {
-    const res = await fetch(`${getApiUrl()}/auth/verify`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/auth/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firebaseUid, email, role, name })
-    });
+    }, 5000);
     if (!res.ok) {
       const error = await res.json().catch(() => ({ error: 'Unknown error' }));
       throw new Error(error.error || 'API error');
@@ -15,7 +15,7 @@ export const userApi = {
   },
 
   async getMe(firebaseUid, token) {
-    const res = await fetch(`${getApiUrl()}/auth/me?firebaseUid=${firebaseUid}`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/auth/me?firebaseUid=${firebaseUid}`, {
       headers: { 
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -29,7 +29,7 @@ export const userApi = {
   },
 
   async updateRole(firebaseUid, role, token) {
-    const res = await fetch(`${getApiUrl()}/auth/role`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/auth/role`, {
       method: 'PUT',
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -45,7 +45,7 @@ export const userApi = {
   },
 
   async updateName(firebaseUid, name, token) {
-    const res = await fetch(`${getApiUrl()}/auth/name`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/auth/name`, {
       method: 'PUT',
       headers: { 
         'Authorization': `Bearer ${token}`,

@@ -1,4 +1,4 @@
-import { getApiUrl } from './api';
+import { getApiUrl, fetchWithTimeout } from './api';
 
 const getHeaders = (token) => ({
   'Content-Type': 'application/json',
@@ -7,7 +7,7 @@ const getHeaders = (token) => ({
 
 export const todoApi = {
   async getAll(token) {
-    const res = await fetch(`${getApiUrl()}/todos`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/todos`, {
       headers: { 
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -17,7 +17,7 @@ export const todoApi = {
   },
 
   async create(todo, token) {
-    const res = await fetch(`${getApiUrl()}/todos`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/todos`, {
       method: 'POST',
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -29,7 +29,7 @@ export const todoApi = {
   },
 
   async update(id, update, token) {
-    const res = await fetch(`${getApiUrl()}/todos/${id}`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/todos/${id}`, {
       method: 'PUT',
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -41,7 +41,7 @@ export const todoApi = {
   },
 
   async delete(id, token) {
-    const res = await fetch(`${getApiUrl()}/todos/${id}`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/todos/${id}`, {
       method: 'DELETE',
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -54,7 +54,7 @@ export const todoApi = {
 
 export const adminApi = {
   async getAllTodos(token) {
-    const res = await fetch(`${getApiUrl()}/admin/todos`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/admin/todos`, {
       headers: { 
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -64,7 +64,7 @@ export const adminApi = {
   },
 
   async getAllUsers(token) {
-    const res = await fetch(`${getApiUrl()}/admin/users`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/admin/users`, {
       headers: { 
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -74,7 +74,7 @@ export const adminApi = {
   },
 
   async deleteTodo(id, token) {
-    const res = await fetch(`${getApiUrl()}/admin/${id}`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/admin/${id}`, {
       method: 'DELETE',
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -85,7 +85,7 @@ export const adminApi = {
   },
 
   async restoreTodo(id, token) {
-    const res = await fetch(`${getApiUrl()}/admin/${id}/restore`, {
+    const res = await fetchWithTimeout(`${getApiUrl()}/admin/${id}/restore`, {
       method: 'PUT',
       headers: { 
         'Authorization': `Bearer ${token}`,

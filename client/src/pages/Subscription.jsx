@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../context/SubscriptionContext';
@@ -9,20 +9,26 @@ const Subscription = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [processing, setProcessing] = useState(false);
-
-  const hasSearchParams = searchParams.get('success') || searchParams.get('canceled');
+  const paramsProcessedRef = useRef(false);
 
   useEffect(() => {
-    if (hasSearchParams) {
-      if (searchParams.get('success') === 'true') {
+    if (paramsProcessedRef.current) return;
+
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+
+    if (success === 'true' || canceled === 'true') {
+      paramsProcessedRef.current = true;
+
+      if (success === 'true') {
         alert('サブスクリプションが正常に開始されました！');
-        navigate('/subscription?success=true', { replace: true });
-      } else if (searchParams.get('canceled') === 'true') {
+      } else if (canceled === 'true') {
         alert('サブスクリプションの作成がキャンセルされました。');
-        navigate('/subscription', { replace: true });
       }
+
+      navigate('/subscription', { replace: true });
     }
-  }, [hasSearchParams, navigate, searchParams]);
+  }, [searchParams, navigate]);
 
   const handleDashboardReturn = () => {
     navigate('/');

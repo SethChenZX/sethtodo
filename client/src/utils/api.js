@@ -19,9 +19,22 @@ const handleResponse = async (response) => {
   return data;
 };
 
+export const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    return response;
+  } finally {
+    clearTimeout(id);
+  }
+};
+
+
+
 export const authApi = {
   sendOtp: async (email) => {
-    const response = await fetch(`${getApiUrl()}/auth/send-otp`, {
+    const response = await fetchWithTimeout(`${getApiUrl()}/auth/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -30,7 +43,7 @@ export const authApi = {
   },
 
   verifyOtp: async (email, otp) => {
-    const response = await fetch(`${getApiUrl()}/auth/verify-otp`, {
+    const response = await fetchWithTimeout(`${getApiUrl()}/auth/verify-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, otp })
@@ -39,7 +52,7 @@ export const authApi = {
   },
 
   checkVerified: async (email) => {
-    const response = await fetch(`${getApiUrl()}/auth/check-verified`, {
+    const response = await fetchWithTimeout(`${getApiUrl()}/auth/check-verified`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -48,7 +61,7 @@ export const authApi = {
   },
 
   forgotPassword: async (email) => {
-    const response = await fetch(`${getApiUrl()}/auth/forgot-password`, {
+    const response = await fetchWithTimeout(`${getApiUrl()}/auth/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -57,7 +70,7 @@ export const authApi = {
   },
 
   resetPassword: async (email, otp, newPassword) => {
-    const response = await fetch(`${getApiUrl()}/auth/reset-password`, {
+    const response = await fetchWithTimeout(`${getApiUrl()}/auth/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, otp, newPassword })
@@ -68,7 +81,7 @@ export const authApi = {
 
 export const subscriptionApi = {
   createCheckoutSession: async (firebaseUid, email) => {
-    const response = await fetch(`${getApiUrl()}/stripe/create-checkout-session`, {
+    const response = await fetchWithTimeout(`${getApiUrl()}/stripe/create-checkout-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firebaseUid, email })
@@ -77,7 +90,7 @@ export const subscriptionApi = {
   },
 
   createPortalSession: async (firebaseUid) => {
-    const response = await fetch(`${getApiUrl()}/stripe/create-portal-session`, {
+    const response = await fetchWithTimeout(`${getApiUrl()}/stripe/create-portal-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firebaseUid })
@@ -86,7 +99,7 @@ export const subscriptionApi = {
   },
 
   getStatus: async (firebaseUid) => {
-    const response = await fetch(`${getApiUrl()}/stripe/subscription-status?firebaseUid=${firebaseUid}`);
+    const response = await fetchWithTimeout(`${getApiUrl()}/stripe/subscription-status?firebaseUid=${firebaseUid}`);
     return handleResponse(response);
   }
 };

@@ -21,6 +21,7 @@ export const SubscriptionProvider = ({ children }) => {
     }
 
     try {
+      setLoading(true);
       const status = await subscriptionApi.getStatus(user.uid);
       setSubscription({
         isPro: status.isPro,
@@ -30,12 +31,20 @@ export const SubscriptionProvider = ({ children }) => {
       });
     } catch (err) {
       console.error('Error fetching subscription status:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchSubscriptionStatus = async () => {
     await fetchSubscriptionStatusRef();
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchSubscriptionStatusRef();
+    }
+  }, [user]);
 
   const startCheckout = async () => {
     if (!user) return null;
