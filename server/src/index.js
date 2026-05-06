@@ -10,6 +10,7 @@ import adminRoutes from './routes/admin.js';
 import authRoutes from './routes/auth.js';
 import todoRoutes from './routes/todos.js';
 import dailySummaryRoutes from './routes/dailySummary.js';
+import weeklySummaryRoutes from './routes/weeklySummary.js';
 import stripeRoutes from './routes/stripe.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/daily-summary', dailySummaryRoutes);
+app.use('/api/weekly-summary', weeklySummaryRoutes);
 app.use('/api/stripe', stripeRoutes);
 
 // Serve static files from client dist
