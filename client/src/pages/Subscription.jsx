@@ -5,7 +5,7 @@ import { useSubscription } from '../context/SubscriptionContext';
 
 const Subscription = () => {
   const { user } = useAuth();
-  const { subscription, isPro, fetchSubscriptionStatus, openBillingPortal } = useSubscription();
+  const { subscription, isPro, fetchSubscriptionStatus, openBillingPortal, syncSubscription } = useSubscription();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [processing, setProcessing] = useState(false);
@@ -22,6 +22,8 @@ const Subscription = () => {
 
       if (success === 'true') {
         alert('サブスクリプションが正常に開始されました！');
+        // 支払い成功後にサブスクリプションステータスを同期
+        syncSubscription().catch(err => console.error('Sync subscription failed:', err));
       } else if (canceled === 'true') {
         alert('サブスクリプションの作成がキャンセルされました。');
       }
@@ -31,7 +33,11 @@ const Subscription = () => {
   }, [searchParams, navigate]);
 
   const handleDashboardReturn = () => {
-    navigate('/');
+    if (user?.role === 'super') {
+      navigate('/admin');
+    } else {
+      navigate('/');
+    }
   };
 
   const handleManageBilling = async () => {

@@ -194,7 +194,7 @@ export const AuthProvider = ({ children }) => {
       console.log('[AuthContext] Unconditional fallback timer fired');
       if (!resolved) {
         console.warn('[AuthContext] onAuthStateChanged never fired, using cached user');
-        const saved = localStorage.getItem(LOCAL_KEY);
+        const saved = localStorage.getItem(LOCAL_KEY) || sessionStorage.getItem(SESSION_KEY);
         if (saved) {
           try {
             const data = JSON.parse(saved);
@@ -221,7 +221,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
       setLoading(false);
-    }, 3000);
+    }, 1500);
 
     return () => {
       clearTimeout(fallbackTimer);

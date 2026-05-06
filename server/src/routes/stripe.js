@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import User from '../models/User.js';
+import Stripe from 'stripe';
 
 const router = Router();
 
@@ -7,12 +8,7 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const CLIENT_URL = process.env.CLIENT_URL || 'https://todo.cshrpro.com';
 
-let stripe = null;
-if (STRIPE_SECRET_KEY) {
-  import('stripe').then(({ default: Stripe }) => {
-    stripe = new Stripe(STRIPE_SECRET_KEY);
-  });
-}
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 
 if (!STRIPE_SECRET_KEY) {
   console.warn('STRIPE_SECRET_KEY is not set. Stripe features will be disabled.');
@@ -117,6 +113,114 @@ router.get('/subscription-status', async (req, res) => {
     });
   } catch (error) {
     console.error('Get subscription status error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/verify-payment', async (req, res) => {
+  try {
+    if (!stripe) {
+      return res.status(500).json({ error: 'Stripeが設定されていません' });
+    }
+
+    const { sessionId, firebaseUid } = req.body;
+
+    if (!sessionId || !firebaseUid) {
+      return res.status(400).json({ error: 'sessionIdとfirebaseUidが必要です' });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (session.payment_status === 'paid') {
+      const user = await User.findOneAndUpdate(
+        { firebaseUid },
+        {
+          subscriptionStatus: 'active',
+          subscriptionPlan: 'pro',
+          stripeCustomerId: session.customer
+        },
+        { new: true }
+      );
+
+      res.json({
+        success: true,
+        paymentStatus: session.payment_status,
+        subscriptionStatus: user.subscriptionStatus,
+        subscriptionPlan: user.subscriptionPlan
+      });
+    } else {
+      res.json({
+        success: false,
+        paymentStatus: session.payment_status,
+        message: '支払いが完了していません'
+      });
+    }
+  } catch (error) {
+    console.error('Verify payment error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/sync-subscription', async (req, res) => {
+  try {
+    if (!stripe) {
+      return res.status(500).json({ error: 'Stripeが設定されていません' });
+    }
+
+    const { firebaseUid } = req.body;
+
+    if (!firebaseUid) {
+      return res.status(400).json({ error: 'firebaseUidが必要です' });
+    }
+
+    const user = await User.findOne({ firebaseUid });
+    if (!user) {
+      return res.status(404).json({ error: 'ユーザーが見つかりません' });
+    }
+
+    if (!user.stripeCustomerId) {
+      return res.json({
+        isPro: false,
+        subscriptionStatus: user.subscriptionStatus,
+        subscriptionPlan: user.subscriptionPlan
+      });
+    }
+
+    const sessions = await stripe.checkout.sessions.list({
+      customer: user.stripeCustomerId,
+      limit: 1
+    });
+
+    if (sessions.data.length > 0) {
+      const latestSession = sessions.data[0];
+      
+      if (latestSession.payment_status === 'paid') {
+        const updatedUser = await User.findOneAndUpdate(
+          { firebaseUid },
+          {
+            subscriptionStatus: 'active',
+            subscriptionPlan: 'pro'
+          },
+          { new: true }
+        );
+
+        return res.json({
+          isPro: true,
+          subscriptionStatus: updatedUser.subscriptionStatus,
+          subscriptionPlan: updatedUser.subscriptionPlan,
+          subscriptionCurrentPeriodEnd: updatedUser.subscriptionCurrentPeriodEnd
+        });
+      }
+    }
+
+    res.json({
+      isPro: user.subscriptionStatus === 'active',
+      subscriptionStatus: user.subscriptionStatus,
+      subscriptionPlan: user.subscriptionPlan,
+      subscriptionCurrentPeriodEnd: user.subscriptionCurrentPeriodEnd
+    });
+  } catch (error) {
+    console.error('Sync subscription error:', error);
     res.status(500).json({ error: error.message });
   }
 });

@@ -101,6 +101,24 @@ export const subscriptionApi = {
   getStatus: async (firebaseUid) => {
     const response = await fetchWithTimeout(`${getApiUrl()}/stripe/subscription-status?firebaseUid=${firebaseUid}`);
     return handleResponse(response);
+  },
+
+  verifyPayment: async (sessionId, firebaseUid) => {
+    const response = await fetchWithTimeout(`${getApiUrl()}/stripe/verify-payment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, firebaseUid })
+    });
+    return handleResponse(response);
+  },
+
+  syncSubscription: async (firebaseUid) => {
+    const response = await fetchWithTimeout(`${getApiUrl()}/stripe/sync-subscription`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firebaseUid })
+    });
+    return handleResponse(response);
   }
 };
 

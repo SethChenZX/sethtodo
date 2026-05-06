@@ -72,6 +72,28 @@ export const SubscriptionProvider = ({ children }) => {
     }
   };
 
+  const syncSubscription = async () => {
+    if (!user) return null;
+
+    try {
+      setLoading(true);
+      const status = await subscriptionApi.syncSubscription(user.uid);
+      setSubscription({
+        isPro: status.isPro,
+        subscriptionStatus: status.subscriptionStatus,
+        subscriptionPlan: status.subscriptionPlan,
+        subscriptionCurrentPeriodEnd: status.subscriptionCurrentPeriodEnd
+      });
+      return status;
+    } catch (err) {
+      console.error('Error syncing subscription:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SubscriptionContext.Provider value={{
       subscription,
@@ -80,7 +102,8 @@ export const SubscriptionProvider = ({ children }) => {
       isPro: subscription.isPro,
       fetchSubscriptionStatus,
       startCheckout,
-      openBillingPortal
+      openBillingPortal,
+      syncSubscription
     }}>
       {children}
     </SubscriptionContext.Provider>
