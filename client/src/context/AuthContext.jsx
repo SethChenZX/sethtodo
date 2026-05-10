@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth as firebaseAuth, app as firebaseApp } from '../firebase';
 import { userApi } from '../utils/userApi';
@@ -55,7 +55,7 @@ const loadUserFromStorage = () => {
               return data.token;
             })();
             try {
-              return await withTimeout(tokenPromise, 3000, data.token);
+              return await withTimeout(tokenPromise, 10000, data.token);
             } catch (e) {
               return data.token;
             }
@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }) => {
   const cachedUser = loadUserFromStorage();
   const [user, setUser] = useState(cachedUser);
   const [loading, setLoading] = useState(!cachedUser);
+  const isLoggingInRef = useRef(false);
 
   useEffect(() => {
     if (user) {
@@ -97,6 +98,12 @@ export const AuthProvider = ({ children }) => {
     console.log('[AuthContext] AuthProvider mounted, cachedUser:', cachedUser ? 'exists' : 'none');
     let resolved = false;
 
+    // キャッシュユーザーがあれば即座に表示し、バックグラウンドで検証
+    if (cachedUser) {
+      console.log('[AuthContext] Using cached user immediately');
+      setLoading(false);
+    }
+
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       resolved = true;
       console.log('[AuthContext] onAuthStateChanged fired:', firebaseUser ? 'user exists' : 'no user');
@@ -104,7 +111,7 @@ export const AuthProvider = ({ children }) => {
         if (firebaseUser) {
           const token = await withTimeout(
             firebaseUser.getIdToken(),
-            3000,
+            30000,
             localStorage.getItem('firebase_token')
           );
           if (token) {
@@ -117,7 +124,7 @@ export const AuthProvider = ({ children }) => {
           try {
             result = await withTimeout(
               userApi.verify(firebaseUser.uid, firebaseUser.email, null, name),
-              5000,
+              60000,
               null
             );
           } catch (verifyErr) {
@@ -148,8 +155,12 @@ export const AuthProvider = ({ children }) => {
           };
           setUser(finalUser);
         } else {
-          setUser(null);
-          localStorage.removeItem('firebase_token');
+          if (isLoggingInRef.current) {
+            console.log('[AuthContext] Ignoring no-user event during login flow');
+          } else {
+            setUser(null);
+            localStorage.removeItem('firebase_token');
+          }
         }
       } catch (error) {
         console.error('Auth state error:', error);
@@ -221,7 +232,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
       setLoading(false);
-    }, 1500);
+    }, 3000);
 
     return () => {
       clearTimeout(fallbackTimer);
@@ -262,7 +273,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginWithGoogle = async (firebaseUser) => {
-    return loginWithFirebase(firebaseUser);
+    isLoggingInRef.current = true;
+    try {
+      return await loginWithFirebase(firebaseUser);
+    } finally {
+      isLoggingInRef.current = false;
+    }
   };
 
   const updateUserRole = async (role) => {

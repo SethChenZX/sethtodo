@@ -1,0 +1,23 @@
+- generic [ref=e145]:
+  - generic [ref=e146]:
+    - generic [ref=e160]: 問題 1 / 5
+    - button "終了" [ref=e161]
+  - generic [ref=e149]:
+    - generic [ref=e162]: 下線部の単語の意味を答えてください
+    - generic [ref=e163]:
+      - text: 道を
+      - mark [ref=e164]: ありく
+    - generic [ref=e165]: 道を歩く
+  - generic [ref=e157]:
+    - generic [ref=e166]: "💡 ヒント（品詞）:"
+    - text: 動詞
+  - generic [ref=e167]:
+    - generic [ref=e171]: 10点 正解！
+    - generic [ref=e172]:
+      - strong [ref=e173]: "正解:"
+      - text: あるく（歩く）
+    - generic [ref=e174]:
+      - strong [ref=e175]: "あなたの回答:"
+      - text: 歩く
+    - generic [ref=e176]: 正解です！
+    - button "次の問題 →" [ref=e177]

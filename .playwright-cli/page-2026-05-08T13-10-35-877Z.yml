@@ -1,0 +1,409 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner "Global Navigation Menu" [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - button "Open menu" [ref=e12] [cursor=pointer]:
+            - img [ref=e13]
+          - link "Homepage (g then d)" [ref=e15] [cursor=pointer]:
+            - /url: /
+            - img [ref=e16]
+        - generic [ref=e18]:
+          - navigation "Breadcrumbs" [ref=e19]:
+            - list [ref=e20]:
+              - listitem [ref=e21]:
+                - link "SethChenZX" [ref=e22] [cursor=pointer]:
+                  - /url: /SethChenZX
+                  - generic [ref=e23]: SethChenZX
+              - listitem [ref=e24]:
+                - link "sethtodo" [ref=e25] [cursor=pointer]:
+                  - /url: /SethChenZX/sethtodo
+                  - generic [ref=e26]: sethtodo
+          - button "Search or jump to…" [ref=e29] [cursor=pointer]:
+            - generic [ref=e30]:
+              - generic:
+                - img
+              - generic [ref=e31]:
+                - generic:
+                  - text: Type
+                  - generic: /
+                  - text: to search
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e36]:
+              - link "Chat with Copilot" [ref=e38] [cursor=pointer]:
+                - /url: /copilot
+                - img [ref=e39]
+              - button "Open Copilot…" [ref=e43] [cursor=pointer]:
+                - generic:
+                  - img
+            - button "Create new..." [ref=e45] [cursor=pointer]:
+              - generic [ref=e46]:
+                - generic:
+                  - img
+              - generic:
+                - img
+            - generic [ref=e47]:
+              - link "All issues" [ref=e48] [cursor=pointer]:
+                - /url: /issues
+                - img [ref=e49]
+              - link "All pull requests" [ref=e52] [cursor=pointer]:
+                - /url: /pulls
+                - img [ref=e53]
+              - link "All repositories" [ref=e55] [cursor=pointer]:
+                - /url: /repos
+                - img [ref=e56]
+          - link "You have unread notifications (g then n)" [ref=e58] [cursor=pointer]:
+            - /url: /notifications
+            - img [ref=e59]
+          - button "Open user navigation menu" [ref=e62] [cursor=pointer]:
+            - img "User avatar" [ref=e63]
+      - heading "Repository navigation" [level=2] [ref=e64]
+      - navigation "Repository" [ref=e65]:
+        - list [ref=e66]:
+          - listitem [ref=e67]:
+            - link "Code" [ref=e68] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo
+              - img [ref=e70]
+              - generic [ref=e72]: Code
+          - listitem [ref=e73]:
+            - link "Issues" [ref=e74] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/issues
+              - img [ref=e76]
+              - generic [ref=e79]: Issues
+          - listitem [ref=e80]:
+            - link "Pull requests" [ref=e81] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/pulls
+              - img [ref=e83]
+              - generic [ref=e85]: Pull requests
+          - listitem [ref=e86]:
+            - link "Agents" [ref=e87] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/agents?author=SethChenZX
+              - img [ref=e89]
+              - generic [ref=e92]: Agents
+          - listitem [ref=e93]:
+            - link "Actions" [ref=e94] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/actions
+              - img [ref=e96]
+              - generic [ref=e98]: Actions
+          - listitem [ref=e99]:
+            - link "Projects" [ref=e100] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/projects
+              - img [ref=e102]
+              - generic [ref=e104]: Projects
+          - listitem [ref=e105]:
+            - link "Wiki" [ref=e106] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/wiki
+              - img [ref=e108]
+              - generic [ref=e110]: Wiki
+          - listitem [ref=e111]:
+            - link "Security and quality (4)" [ref=e112] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/security
+              - img [ref=e114]
+              - generic [ref=e116]: Security and quality
+              - generic [ref=e117]:
+                - generic [ref=e118]: "4"
+                - generic [ref=e119]: (4)
+          - listitem [ref=e120]:
+            - link "Insights" [ref=e121] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/pulse
+              - img [ref=e123]
+              - generic [ref=e125]: Insights
+          - listitem [ref=e126]:
+            - link "Settings" [ref=e127] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/settings
+              - img [ref=e129]
+              - generic [ref=e131]: Settings
+  - generic [ref=e135]:
+    - button "Dismiss this message" [active] [ref=e136] [cursor=pointer]:
+      - img [ref=e137]
+    - alert [ref=e139]: Repository secret added.
+  - main [ref=e141]:
+    - generic [ref=e143]:
+      - 'heading "Settings: SethChenZX/sethtodo" [level=1] [ref=e144]'
+      - generic [ref=e146]:
+        - navigation "General settings" [ref=e149]:
+          - list [ref=e151]:
+            - listitem [ref=e152]:
+              - link "General" [ref=e153] [cursor=pointer]:
+                - /url: /SethChenZX/sethtodo/settings
+                - generic:
+                  - img
+                - generic [ref=e154]: General
+            - listitem [ref=e155]
+            - listitem [ref=e156]:
+              - generic [ref=e159]:
+                - heading "Access" [level=2] [ref=e161]
+                - list "Access" [ref=e162]:
+                  - listitem [ref=e163]:
+                    - link "Collaborators" [ref=e164] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/access
+                      - generic:
+                        - img
+                      - generic [ref=e165]: Collaborators
+                  - listitem [ref=e166]:
+                    - button "Moderation options" [ref=e167] [cursor=pointer]:
+                      - generic:
+                        - img
+                      - generic [ref=e168]: Moderation options
+                      - generic:
+                        - img
+            - listitem [ref=e169]
+            - listitem [ref=e170]:
+              - generic [ref=e173]:
+                - heading "Code and automation" [level=2] [ref=e175]
+                - list "Code and automation" [ref=e176]:
+                  - listitem [ref=e177]:
+                    - link "Branches" [ref=e178] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/branches
+                      - generic:
+                        - img
+                      - generic [ref=e179]: Branches
+                  - listitem [ref=e180]:
+                    - link "Tags" [ref=e181] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/tag_protection
+                      - generic:
+                        - img
+                      - generic [ref=e182]: Tags
+                  - listitem [ref=e183]:
+                    - button "Rules" [ref=e184] [cursor=pointer]:
+                      - generic:
+                        - img
+                      - generic [ref=e185]: Rules
+                      - generic:
+                        - img
+                  - listitem [ref=e186]:
+                    - button "Actions" [ref=e187] [cursor=pointer]:
+                      - generic:
+                        - img
+                      - generic [ref=e188]: Actions
+                      - generic:
+                        - img
+                  - listitem [ref=e189]:
+                    - link "Models Preview feature" [ref=e190] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/models/access-policy
+                      - generic:
+                        - img
+                      - generic [ref=e191]: Models
+                      - generic:
+                        - generic "Preview feature": Preview
+                  - listitem [ref=e192]:
+                    - link "Webhooks" [ref=e193] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/hooks
+                      - generic:
+                        - img
+                      - generic [ref=e194]: Webhooks
+                  - listitem [ref=e195]:
+                    - button "Copilot" [ref=e196] [cursor=pointer]:
+                      - generic:
+                        - img
+                      - generic [ref=e197]: Copilot
+                      - generic:
+                        - img
+                  - listitem [ref=e198]:
+                    - link "Environments" [ref=e199] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/environments
+                      - generic:
+                        - img
+                      - generic [ref=e200]: Environments
+                  - listitem [ref=e201]:
+                    - link "Codespaces" [ref=e202] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/codespaces
+                      - generic:
+                        - img
+                      - generic [ref=e203]: Codespaces
+                  - listitem [ref=e204]:
+                    - link "Pages" [ref=e205] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/pages
+                      - generic:
+                        - img
+                      - generic [ref=e206]: Pages
+            - listitem [ref=e207]
+            - listitem [ref=e208]:
+              - generic [ref=e211]:
+                - heading "Security and quality" [level=2] [ref=e213]
+                - list "Security and quality" [ref=e214]:
+                  - listitem [ref=e215]:
+                    - link "Advanced Security" [ref=e216] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/security_analysis
+                      - generic:
+                        - img
+                      - generic [ref=e217]: Advanced Security
+                  - listitem [ref=e218]:
+                    - link "Deploy keys" [ref=e219] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/keys
+                      - generic:
+                        - img
+                      - generic [ref=e220]: Deploy keys
+                  - listitem [ref=e221]:
+                    - button "Secrets and variables" [expanded] [ref=e222] [cursor=pointer]:
+                      - generic:
+                        - img
+                      - generic [ref=e223]: Secrets and variables
+                      - generic:
+                        - img
+                    - list "Secrets and variables" [ref=e224]:
+                      - listitem [ref=e225]:
+                        - link "Actions" [ref=e226] [cursor=pointer]:
+                          - /url: /SethChenZX/sethtodo/settings/secrets/actions
+                          - generic [ref=e227]: Actions
+                      - listitem [ref=e228]:
+                        - link "Agents" [ref=e229] [cursor=pointer]:
+                          - /url: /SethChenZX/sethtodo/settings/secrets/agents
+                          - generic [ref=e230]: Agents
+                      - listitem [ref=e231]:
+                        - link "Codespaces" [ref=e232] [cursor=pointer]:
+                          - /url: /SethChenZX/sethtodo/settings/secrets/codespaces
+                          - generic [ref=e233]: Codespaces
+                      - listitem [ref=e234]:
+                        - link "Dependabot" [ref=e235] [cursor=pointer]:
+                          - /url: /SethChenZX/sethtodo/settings/secrets/dependabot
+                          - generic [ref=e236]: Dependabot
+            - listitem [ref=e237]
+            - listitem [ref=e238]:
+              - generic [ref=e241]:
+                - heading "Integrations" [level=2] [ref=e243]
+                - list "Integrations" [ref=e244]:
+                  - listitem [ref=e245]:
+                    - link "GitHub Apps" [ref=e246] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/installations
+                      - generic:
+                        - img
+                      - generic [ref=e247]: GitHub Apps
+                  - listitem [ref=e248]:
+                    - link "Email notifications" [ref=e249] [cursor=pointer]:
+                      - /url: /SethChenZX/sethtodo/settings/notifications
+                      - generic:
+                        - img
+                      - generic [ref=e250]: Email notifications
+        - generic [ref=e253]:
+          - heading "Actions secrets and variables" [level=2] [ref=e255]
+          - paragraph [ref=e256]:
+            - text: Secrets and variables allow you to manage reusable configuration data. Secrets are
+            - strong [ref=e257]: encrypted
+            - text: and are used for sensitive data.
+            - link "Learn more about encrypted secrets" [ref=e258] [cursor=pointer]:
+              - /url: https://docs.github.com/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
+            - text: . Variables are shown as plain text and are used for
+            - strong [ref=e259]: non-sensitive
+            - text: data.
+            - link "Learn more about variables" [ref=e260] [cursor=pointer]:
+              - /url: https://docs.github.com/actions/learn-github-actions/variables
+            - text: .
+          - paragraph [ref=e261]: Anyone with collaborator access to this repository can use these secrets and variables for actions. They are not passed to workflows that are triggered by a pull request from a fork.
+          - navigation "Secrets or variables tab" [ref=e262]:
+            - list [ref=e263]:
+              - listitem [ref=e264]:
+                - link "Secrets" [ref=e265] [cursor=pointer]:
+                  - /url: /SethChenZX/sethtodo/settings/secrets/actions
+              - listitem [ref=e266]:
+                - link "Variables" [ref=e267] [cursor=pointer]:
+                  - /url: /SethChenZX/sethtodo/settings/variables/actions
+          - heading "Secrets" [level=3] [ref=e268]
+          - generic [ref=e271]:
+            - heading "Environment secrets" [level=2] [ref=e272]
+            - generic [ref=e275]:
+              - paragraph [ref=e276]:
+                - generic [ref=e277]: This environment has no secrets.
+              - link "Manage environment secrets" [ref=e279] [cursor=pointer]:
+                - /url: /SethChenZX/sethtodo/settings/environments
+                - generic [ref=e281]: Manage environment secrets
+          - generic [ref=e286]:
+            - heading "Repository secrets" [level=2] [ref=e287]
+            - link "New repository secret" [ref=e289] [cursor=pointer]:
+              - /url: /SethChenZX/sethtodo/settings/secrets/actions/new
+              - generic [ref=e291]: New repository secret
+            - table "Repository secrets" [ref=e293]:
+              - rowgroup [ref=e294]:
+                - row "Name Last updated sort ascending Actions" [ref=e295]:
+                  - columnheader "Name" [ref=e296]:
+                    - button "Name" [ref=e297] [cursor=pointer]:
+                      - text: Name
+                      - img [ref=e298]
+                  - columnheader "Last updated sort ascending" [ref=e300]:
+                    - button "Last updated sort ascending" [ref=e301] [cursor=pointer]:
+                      - generic "Last updated" [ref=e302]
+                      - generic [ref=e303]: sort ascending
+                  - columnheader "Actions" [ref=e304]:
+                    - generic [ref=e305]: Actions
+              - rowgroup [ref=e306]:
+                - row "DAILY_SUMMARY_API_URL Apr 3, 2026last month Edit DAILY_SUMMARY_API_URL Delete DAILY_SUMMARY_API_URL" [ref=e307]:
+                  - cell "DAILY_SUMMARY_API_URL" [ref=e308]:
+                    - generic "DAILY_SUMMARY_API_URL" [ref=e309]:
+                      - img [ref=e310]
+                      - code [ref=e312]: DAILY_SUMMARY_API_URL
+                  - cell "Apr 3, 2026last month" [ref=e313]:
+                    - generic "4/3/2026" [ref=e314]: Apr 3, 2026last month
+                  - cell "Edit DAILY_SUMMARY_API_URL Delete DAILY_SUMMARY_API_URL" [ref=e315]:
+                    - generic [ref=e316]:
+                      - link "Edit DAILY_SUMMARY_API_URL" [ref=e318] [cursor=pointer]:
+                        - /url: /SethChenZX/sethtodo/settings/secrets/actions/DAILY_SUMMARY_API_URL
+                        - img [ref=e319]
+                      - button "Delete DAILY_SUMMARY_API_URL" [ref=e322] [cursor=pointer]:
+                        - img [ref=e323]
+                - row "DAILY_SUMMARY_SECRET Apr 1, 2026last month Edit DAILY_SUMMARY_SECRET Delete DAILY_SUMMARY_SECRET" [ref=e325]:
+                  - cell "DAILY_SUMMARY_SECRET" [ref=e326]:
+                    - generic "DAILY_SUMMARY_SECRET" [ref=e327]:
+                      - img [ref=e328]
+                      - code [ref=e330]: DAILY_SUMMARY_SECRET
+                  - cell "Apr 1, 2026last month" [ref=e331]:
+                    - generic "4/1/2026" [ref=e332]: Apr 1, 2026last month
+                  - cell "Edit DAILY_SUMMARY_SECRET Delete DAILY_SUMMARY_SECRET" [ref=e333]:
+                    - generic [ref=e334]:
+                      - link "Edit DAILY_SUMMARY_SECRET" [ref=e336] [cursor=pointer]:
+                        - /url: /SethChenZX/sethtodo/settings/secrets/actions/DAILY_SUMMARY_SECRET
+                        - img [ref=e337]
+                      - button "Delete DAILY_SUMMARY_SECRET" [ref=e340] [cursor=pointer]:
+                        - img [ref=e341]
+                - row "WEEKLY_SUMMARY_API_URL May 8, 2026now Edit WEEKLY_SUMMARY_API_URL Delete WEEKLY_SUMMARY_API_URL" [ref=e343]:
+                  - cell "WEEKLY_SUMMARY_API_URL" [ref=e344]:
+                    - generic "WEEKLY_SUMMARY_API_URL" [ref=e345]:
+                      - img [ref=e346]
+                      - code [ref=e348]: WEEKLY_SUMMARY_API_URL
+                  - cell "May 8, 2026now" [ref=e349]:
+                    - generic "5/8/2026" [ref=e350]: May 8, 2026now
+                  - cell "Edit WEEKLY_SUMMARY_API_URL Delete WEEKLY_SUMMARY_API_URL" [ref=e351]:
+                    - generic [ref=e352]:
+                      - link "Edit WEEKLY_SUMMARY_API_URL" [ref=e354] [cursor=pointer]:
+                        - /url: /SethChenZX/sethtodo/settings/secrets/actions/WEEKLY_SUMMARY_API_URL
+                        - img [ref=e355]
+                      - button "Delete WEEKLY_SUMMARY_API_URL" [ref=e358] [cursor=pointer]:
+                        - img [ref=e359]
+  - contentinfo [ref=e361]:
+    - heading "Footer" [level=2] [ref=e362]
+    - generic [ref=e363]:
+      - generic [ref=e364]:
+        - link "GitHub Homepage" [ref=e365] [cursor=pointer]:
+          - /url: https://github.com
+          - img [ref=e366]
+        - generic [ref=e368]: © 2026 GitHub, Inc.
+      - navigation "Footer" [ref=e369]:
+        - heading "Footer navigation" [level=3] [ref=e370]
+        - list "Footer navigation" [ref=e371]:
+          - listitem [ref=e372]:
+            - link "Terms" [ref=e373] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+          - listitem [ref=e374]:
+            - link "Privacy" [ref=e375] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+          - listitem [ref=e376]:
+            - link "Security" [ref=e377] [cursor=pointer]:
+              - /url: https://github.com/security
+          - listitem [ref=e378]:
+            - link "Status" [ref=e379] [cursor=pointer]:
+              - /url: https://www.githubstatus.com/
+          - listitem [ref=e380]:
+            - link "Community" [ref=e381] [cursor=pointer]:
+              - /url: https://github.community/
+          - listitem [ref=e382]:
+            - link "Docs" [ref=e383] [cursor=pointer]:
+              - /url: https://docs.github.com/
+          - listitem [ref=e384]:
+            - link "Contact" [ref=e385] [cursor=pointer]:
+              - /url: https://support.github.com?tags=dotcom-footer
+          - listitem [ref=e386]:
+            - button "Manage cookies" [ref=e388] [cursor=pointer]
+          - listitem [ref=e389]:
+            - button "Do not share my personal information" [ref=e391] [cursor=pointer]

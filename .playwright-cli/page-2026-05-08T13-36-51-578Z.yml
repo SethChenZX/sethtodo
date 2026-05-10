@@ -1,0 +1,21 @@
+- generic [ref=e145]:
+  - generic [ref=e146]:
+    - generic [ref=e160]: 問題 3 / 5
+    - button "終了" [ref=e161]
+  - generic [ref=e149]:
+    - generic [ref=e162]: 下線部の単語の意味を答えてください
+    - generic [ref=e163]:
+      - text: 室の中に香を
+      - mark [ref=e164]: かぐ
+    - generic [ref=e165]: 部屋の中で香を焚く
+  - generic [ref=e193]: 🎯 ヒントなしモード！
+  - generic [ref=e167]:
+    - generic [ref=e197]: 10点 正解！
+    - generic [ref=e198]:
+      - strong [ref=e199]: "正解:"
+      - text: 香をかぐ（たく・焚く）
+    - generic [ref=e200]:
+      - strong [ref=e201]: "あなたの回答:"
+      - text: 焚く
+    - generic [ref=e202]: 正解です！
+    - button "次の問題 →" [ref=e203]

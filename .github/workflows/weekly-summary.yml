@@ -1,0 +1,16 @@
+name: Weekly Summary Email
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  send-weekly-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send weekly summary request
+        run: |
+          curl -X POST "${{ secrets.WEEKLY_SUMMARY_API_URL }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${{ secrets.WEEKLY_SUMMARY_SECRET }}\"}"

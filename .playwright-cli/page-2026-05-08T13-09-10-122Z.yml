@@ -1,0 +1,160 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner "Global Navigation Menu" [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - button "Open menu" [ref=e12] [cursor=pointer]:
+            - img [ref=e13]
+          - link "Homepage (g then d)" [ref=e15] [cursor=pointer]:
+            - /url: /
+            - img [ref=e16]
+        - generic [ref=e18]:
+          - navigation "Breadcrumbs" [ref=e19]:
+            - list [ref=e20]:
+              - listitem [ref=e21]:
+                - link "Dashboard" [ref=e22] [cursor=pointer]:
+                  - /url: https://github.com/
+                  - generic [ref=e23]: Dashboard
+          - button "Search or jump to…" [ref=e26] [cursor=pointer]:
+            - generic [ref=e27]:
+              - generic:
+                - img
+              - generic [ref=e28]:
+                - generic:
+                  - text: Type
+                  - generic: /
+                  - text: to search
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - generic [ref=e33]:
+              - link "Chat with Copilot" [ref=e35] [cursor=pointer]:
+                - /url: /copilot
+                - img [ref=e36]
+              - button "Open Copilot…" [ref=e40] [cursor=pointer]:
+                - generic:
+                  - img
+            - button "Create new..." [ref=e42] [cursor=pointer]:
+              - generic [ref=e43]:
+                - generic:
+                  - img
+              - generic:
+                - img
+            - generic [ref=e44]:
+              - link "All issues (g then i)" [ref=e45] [cursor=pointer]:
+                - /url: /issues
+                - img [ref=e46]
+              - link "All pull requests (g then p)" [ref=e49] [cursor=pointer]:
+                - /url: /pulls
+                - img [ref=e50]
+              - link "All repositories" [ref=e52] [cursor=pointer]:
+                - /url: /repos
+                - img [ref=e53]
+          - link "You have no unread notifications (g then n)" [ref=e55] [cursor=pointer]:
+            - /url: /notifications
+            - img [ref=e56]
+          - button "Open user navigation menu" [ref=e59] [cursor=pointer]:
+            - img "User avatar" [ref=e60]
+  - generic [ref=e64]:
+    - complementary "Account" [ref=e65]:
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - img [ref=e73]
+          - generic [ref=e76]: Loading
+        - paragraph
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - main [ref=e81]:
+          - generic [ref=e83]:
+            - heading "Dashboard" [level=1] [ref=e84]
+            - heading "Home" [level=2] [ref=e86]
+            - generic [ref=e87]:
+              - generic [ref=e89]:
+                - generic [ref=e90]:
+                  - generic [ref=e91]:
+                    - img [ref=e92]
+                    - text: Ask Copilot
+                  - generic [ref=e95]:
+                    - link "Upgrade" [ref=e96] [cursor=pointer]:
+                      - /url: https://github.com/features/copilot#pricing
+                      - generic [ref=e98]: Upgrade
+                    - button "Dismiss" [ref=e99] [cursor=pointer]:
+                      - generic [ref=e101]: Dismiss
+                - generic [ref=e102]: You have reached your free plan limit. It will reset on May 30, 2026.
+              - generic [ref=e103]:
+                - generic [ref=e104]:
+                  - heading "Feed" [level=2] [ref=e105]
+                  - group [ref=e108]:
+                    - button "Filter" [ref=e109] [cursor=pointer]:
+                      - img [ref=e110]
+                      - text: Filter
+                - generic [ref=e114]:
+                  - img "Loading your activity..." [ref=e116]
+                  - paragraph [ref=e117]: One moment please...
+        - contentinfo [ref=e118]:
+          - heading "Footer" [level=2] [ref=e119]
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - link "GitHub Homepage" [ref=e122] [cursor=pointer]:
+                - /url: https://github.com
+                - img [ref=e123]
+              - generic [ref=e125]: © 2026 GitHub, Inc.
+            - navigation "Footer" [ref=e126]:
+              - heading "Footer navigation" [level=3] [ref=e127]
+              - list "Footer navigation" [ref=e128]:
+                - listitem [ref=e129]:
+                  - link "Terms" [ref=e130] [cursor=pointer]:
+                    - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+                - listitem [ref=e131]:
+                  - link "Privacy" [ref=e132] [cursor=pointer]:
+                    - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+                - listitem [ref=e133]:
+                  - link "Security" [ref=e134] [cursor=pointer]:
+                    - /url: https://github.com/security
+                - listitem [ref=e135]:
+                  - link "Status" [ref=e136] [cursor=pointer]:
+                    - /url: https://www.githubstatus.com/
+                - listitem [ref=e137]:
+                  - link "Community" [ref=e138] [cursor=pointer]:
+                    - /url: https://github.community/
+                - listitem [ref=e139]:
+                  - link "Docs" [ref=e140] [cursor=pointer]:
+                    - /url: https://docs.github.com/
+                - listitem [ref=e141]:
+                  - link "Contact" [ref=e142] [cursor=pointer]:
+                    - /url: https://support.github.com?tags=dotcom-footer
+                - listitem [ref=e143]:
+                  - button "Manage cookies" [ref=e145] [cursor=pointer]
+                - listitem [ref=e146]:
+                  - button "Do not share my personal information" [ref=e148] [cursor=pointer]
+      - complementary "Explore" [ref=e149]:
+        - generic [ref=e150]:
+          - heading "Latest from our changelog" [level=2] [ref=e151]
+          - list [ref=e152]:
+            - listitem [ref=e153]:
+              - img [ref=e155]
+              - generic [ref=e157]:
+                - generic [ref=e158]: May 8, 20264 hours ago
+                - link "CodeQL 2.25.3 adds Swift 6.3 support" [ref=e159] [cursor=pointer]:
+                  - /url: https://github.blog/changelog/2026-05-08-codeql-2-25-3-adds-swift-6-3-support
+            - listitem [ref=e160]:
+              - img [ref=e162]
+              - generic [ref=e164]:
+                - generic [ref=e165]: May 8, 202612 hours ago
+                - link "Upcoming deprecation of GPT-4.1" [ref=e166] [cursor=pointer]:
+                  - /url: https://github.blog/changelog/2026-05-07-upcoming-deprecation-of-gpt-4-1
+            - listitem [ref=e167]:
+              - img [ref=e169]
+              - generic [ref=e171]:
+                - generic [ref=e172]: May 8, 202614 hours ago
+                - link "Claude Sonnet 4 deprecated" [ref=e173] [cursor=pointer]:
+                  - /url: https://github.blog/changelog/2026-05-07-claude-sonnet-4-deprecated
+            - listitem [ref=e174]:
+              - img [ref=e176]
+              - generic [ref=e178]:
+                - generic [ref=e179]: May 8, 202616 hours ago
+                - link "Enterprise Live Migrations is now in public preview" [ref=e180] [cursor=pointer]:
+                  - /url: https://github.blog/changelog/2026-05-07-enterprise-live-migrations-is-now-in-public-preview
+          - link "View changelog →" [ref=e182] [cursor=pointer]:
+            - /url: https://github.blog/changelog

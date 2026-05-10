@@ -1,0 +1,7 @@
+- generic [ref=e3]:
+  - heading "古文学習帳" [level=1] [ref=e4]
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - text: "名前:"
+      - textbox "名前を入力" [ref=e7]
+    - button "登録" [ref=e8]

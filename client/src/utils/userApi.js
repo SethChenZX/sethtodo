@@ -6,7 +6,7 @@ export const userApi = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firebaseUid, email, role, name })
-    }, 5000);
+    }, 60000);
     if (!res.ok) {
       const error = await res.json().catch(() => ({ error: 'Unknown error' }));
       throw new Error(error.error || 'API error');

@@ -1,0 +1,20 @@
+- generic [ref=e145]:
+  - generic [ref=e146]:
+    - generic [ref=e160]: 問題 2 / 5
+    - button "終了" [ref=e161]
+  - generic [ref=e149]:
+    - generic [ref=e162]: 下線部の単語の意味を答えてください
+    - generic [ref=e163]:
+      - text: 心
+      - mark [ref=e164]: 美し
+    - generic [ref=e165]: 心がよい・心地よい
+  - generic [ref=e157]:
+    - generic [ref=e166]: "💡 ヒント（品詞）:"
+    - text: 形容詞
+  - generic [ref=e178]:
+    - generic [ref=e179]: "💡 ヒント（その他の意味）:"
+    - generic [ref=e181]: うつくしい（美しい）
+  - generic [ref=e167]:
+    - generic [ref=e182]: "「美し」の意味を答えてください:"
+    - textbox "意味を入力..." [active] [ref=e183]
+    - button "回答する" [disabled] [ref=e184]

@@ -1,0 +1,146 @@
+- generic [ref=e9]:
+  - generic [ref=e10]:
+    - heading "古文学習帳" [level=1] [ref=e11]
+    - generic [ref=e12]:
+      - generic [ref=e13]: "ユーザー: テストユーザー"
+      - button "ログアウト" [ref=e14]
+  - generic [ref=e15]:
+    - 'button "📝 クイズタイプ1: 単語→意味" [ref=e16]'
+    - 'button "🔄 クイズタイプ2: 意味→単語" [ref=e17]'
+    - 'button "📖 クイズタイプ3: 例文→意味" [ref=e18]'
+    - button "📊 クイズ履歴" [ref=e19]
+  - generic [ref=e20]:
+    - heading "単語登録" [level=2] [ref=e21]
+    - generic [ref=e22]:
+      - text: "word:"
+      - generic [ref=e23]:
+        - textbox [ref=e24]
+        - button "AI検索" [ref=e25]
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - text: "katuyou:"
+        - textbox [ref=e28]
+      - generic [ref=e29]:
+        - text: "hinshi:"
+        - textbox [ref=e30]
+    - generic [ref=e31]:
+      - text: "kanrensi:"
+      - generic [ref=e33]:
+        - textbox [ref=e34]
+        - button "+" [ref=e35]
+        - button "×" [disabled] [ref=e36]
+    - button "意味を追加" [ref=e38]
+    - generic [ref=e39]:
+      - strong [ref=e41]: "explanation:"
+      - textbox "解説を入力" [ref=e42]
+    - button "➕ 事項を追加" [ref=e44]
+    - generic [ref=e45]:
+      - button "保存" [ref=e46]
+      - button "キャンセル" [ref=e47]
+  - generic [ref=e48]:
+    - heading "登録済み単語" [level=2] [ref=e49]
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - heading "なり" [level=3] [ref=e52]
+        - button "編集" [ref=e53]
+        - button "削除" [ref=e54]
+      - paragraph [ref=e55]:
+        - strong [ref=e56]: "活用:"
+        - text: ラ行変格活用
+      - paragraph [ref=e57]:
+        - strong [ref=e58]: "品詞:"
+        - text: 助動詞
+      - generic [ref=e59]:
+        - strong [ref=e60]: "意味:"
+        - generic [ref=e61]:
+          - paragraph [ref=e62]: 1. 断定（～である）
+          - list [ref=e63]:
+            - listitem [ref=e64]: 春なり → 春である
+        - generic [ref=e65]:
+          - paragraph [ref=e66]: 2. 聞き手への伝聞（～だそうだ）
+          - list [ref=e67]:
+            - listitem [ref=e68]: 人の言ふなり → 人が言うそうだ
+    - generic [ref=e69]:
+      - generic [ref=e70]:
+        - heading "けり" [level=3] [ref=e71]
+        - button "編集" [ref=e72]
+        - button "削除" [ref=e73]
+      - paragraph [ref=e74]:
+        - strong [ref=e75]: "活用:"
+        - text: ラ行変格活用
+      - paragraph [ref=e76]:
+        - strong [ref=e77]: "品詞:"
+        - text: 助動詞
+      - generic [ref=e78]:
+        - strong [ref=e79]: "意味:"
+        - generic [ref=e80]:
+          - paragraph [ref=e81]: 1. 詠嘆（感嘆・驚き）
+          - list [ref=e82]:
+            - listitem [ref=e83]: あはれなりけり → ああ、なんて情けないことだろう
+        - generic [ref=e84]:
+          - paragraph [ref=e85]: 2. 詠嘆の反語（意外・失望）
+          - list [ref=e86]:
+            - listitem [ref=e87]: 思ひのほかなりけり → 思いのほかだ（意外だ）
+    - generic [ref=e88]:
+      - generic [ref=e89]:
+        - heading "美し" [level=3] [ref=e90]
+        - button "編集" [ref=e91]
+        - button "削除" [ref=e92]
+      - paragraph [ref=e93]:
+        - strong [ref=e94]: "活用:"
+        - text: シク活用
+      - paragraph [ref=e95]:
+        - strong [ref=e96]: "品詞:"
+        - text: 形容詞
+      - generic [ref=e97]:
+        - strong [ref=e98]: "意味:"
+        - generic [ref=e99]:
+          - paragraph [ref=e100]: 1. うつくしい（美しい）
+          - list [ref=e101]:
+            - listitem [ref=e102]: 花の色美し → 花の色が美しい
+        - generic [ref=e103]:
+          - paragraph [ref=e104]: 2. よい（心地よい）
+          - list [ref=e105]:
+            - listitem [ref=e106]: 心美し → 心がよい・心地よい
+    - generic [ref=e107]:
+      - generic [ref=e108]:
+        - heading "ありく" [level=3] [ref=e109]
+        - button "編集" [ref=e110]
+        - button "削除" [ref=e111]
+      - paragraph [ref=e112]:
+        - strong [ref=e113]: "活用:"
+        - text: カ行四段活用
+      - paragraph [ref=e114]:
+        - strong [ref=e115]: "品詞:"
+        - text: 動詞
+      - generic [ref=e116]:
+        - strong [ref=e117]: "意味:"
+        - generic [ref=e118]:
+          - paragraph [ref=e119]: 1. あるく（歩く）
+          - list [ref=e120]:
+            - listitem [ref=e121]: 道をありく → 道を歩く
+        - generic [ref=e122]:
+          - paragraph [ref=e123]: 2. あるく（生きる・暮らす）
+          - list [ref=e124]:
+            - listitem [ref=e125]: 世にありく → 世の中で生きる
+    - generic [ref=e126]:
+      - generic [ref=e127]:
+        - heading "かぐ" [level=3] [ref=e128]
+        - button "編集" [ref=e129]
+        - button "削除" [ref=e130]
+      - paragraph [ref=e131]:
+        - strong [ref=e132]: "活用:"
+        - text: 四段活用
+      - paragraph [ref=e133]:
+        - strong [ref=e134]: "品詞:"
+        - text: 動詞
+      - generic [ref=e135]:
+        - strong [ref=e136]: "意味:"
+        - generic [ref=e137]:
+          - paragraph [ref=e138]: 1. 花の香をかぐ（嗅ぐ）
+          - list [ref=e139]:
+            - listitem [ref=e140]: 花の香をかぐ → 花の香りを嗅ぐ
+        - generic [ref=e141]:
+          - paragraph [ref=e142]: 2. 香をかぐ（たく・焚く）
+          - list [ref=e143]:
+            - listitem [ref=e144]: 室の中に香をかぐ → 部屋の中で香を焚く

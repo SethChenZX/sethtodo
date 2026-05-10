@@ -1,0 +1,17 @@
+- generic [ref=e145]:
+  - generic [ref=e146]:
+    - generic [ref=e160]: 問題 1 / 5
+    - button "終了" [ref=e161]
+  - generic [ref=e149]:
+    - generic [ref=e162]: 下線部の単語の意味を答えてください
+    - generic [ref=e163]:
+      - text: 道を
+      - mark [ref=e164]: ありく
+    - generic [ref=e165]: 道を歩く
+  - generic [ref=e157]:
+    - generic [ref=e166]: "💡 ヒント（品詞）:"
+    - text: 動詞
+  - generic [ref=e167]:
+    - generic [ref=e168]: "「ありく」の意味を答えてください:"
+    - textbox "意味を入力..." [active] [ref=e169]
+    - button "回答する" [disabled] [ref=e170]

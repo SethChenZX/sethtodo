@@ -79,10 +79,14 @@ const Dashboard = () => {
     try {
       setError('');
       const token = await user.getIdToken();
-      const userData = await userApi.getMe(user.uid, token);
       
-      let userTodos = await todoApi.getAll(token);
-      userTodos = userTodos.filter(t => {
+      // 並列実行でAPI待ち時間を短縮
+      const [userData, userTodosRaw] = await Promise.all([
+        userApi.getMe(user.uid, token),
+        todoApi.getAll(token)
+      ]);
+      
+      let userTodos = userTodosRaw.filter(t => {
         const todoUserId = typeof t.userId === 'object' ? t.userId._id || t.userId.$oid : t.userId;
         return todoUserId === user.uid || todoUserId === userData._id;
       });

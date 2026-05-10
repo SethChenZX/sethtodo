@@ -5,7 +5,7 @@ import { sendWeeklySummaryEmail } from '../utils/email.js';
 
 const router = Router();
 
-const WEEKLY_SUMMARY_SECRET = process.env.WEEKLY_SUMMARY_SECRET;
+const WEEKLY_SUMMARY_SECRET = process.env.WEEKLY_SUMMARY_SECRET || process.env.DAILY_SUMMARY_SECRET;
 
 const verifySecret = (req, res, next) => {
   const { secret } = req.body;

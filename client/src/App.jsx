@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
 import Login from './pages/Login';
-import SelectRole from './pages/SelectRole';
-import Dashboard from './pages/Dashboard';
-import Admin from './pages/Admin';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Pricing from './pages/Pricing';
-import Subscription from './pages/Subscription';
+
+// コード分割：非メイン画面を遅延読み込み
+const SelectRole = lazy(() => import('./pages/SelectRole'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Admin = lazy(() => import('./pages/Admin'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const Subscription = lazy(() => import('./pages/Subscription'));
 
 const LoadingFallback = () => {
   const [showRetry, setShowRetry] = useState(false);

@@ -19,14 +19,21 @@ const handleResponse = async (response) => {
   return data;
 };
 
-export const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
+export const fetchWithTimeout = async (url, options = {}, timeout = 60000) => {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+  const id = setTimeout(() => {
+    controller.abort(new Error(`Request timeout after ${timeout}ms`));
+  }, timeout);
   try {
     const response = await fetch(url, { ...options, signal: controller.signal });
-    return response;
-  } finally {
     clearTimeout(id);
+    return response;
+  } catch (err) {
+    clearTimeout(id);
+    if (err.name === 'AbortError' && !err.message.includes('timeout')) {
+      err.message = `Request timeout: ${url}`;
+    }
+    throw err;
   }
 };
 

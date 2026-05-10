@@ -1,0 +1,15 @@
+- generic [ref=e145]:
+  - generic [ref=e146]:
+    - generic [ref=e160]: 問題 3 / 5
+    - button "終了" [ref=e161]
+  - generic [ref=e149]:
+    - generic [ref=e162]: 下線部の単語の意味を答えてください
+    - generic [ref=e163]:
+      - text: 室の中に香を
+      - mark [ref=e164]: かぐ
+    - generic [ref=e165]: 部屋の中で香を焚く
+  - generic [ref=e193]: 🎯 ヒントなしモード！
+  - generic [ref=e167]:
+    - generic [ref=e194]: "「かぐ」の意味を答えてください:"
+    - textbox "意味を入力..." [active] [ref=e195]
+    - button "回答する" [disabled] [ref=e196]

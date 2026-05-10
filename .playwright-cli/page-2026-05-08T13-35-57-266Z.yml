@@ -1,0 +1,23 @@
+- generic [ref=e145]:
+  - generic [ref=e146]:
+    - 'heading "クイズタイプ3: 例文から意味を答える" [level=2] [ref=e147]'
+    - button "← 戻る" [ref=e148]
+  - generic [ref=e149]:
+    - heading "ルール" [level=3] [ref=e150]
+    - list [ref=e151]:
+      - listitem [ref=e152]: 古文の例文が表示されます
+      - listitem [ref=e153]:
+        - text: 例文中の
+        - strong [ref=e154]: 下線部の単語
+        - text: の意味を入力してください
+      - listitem [ref=e155]: その単語の他の意味はヒントとして表示されます
+      - listitem [ref=e156]: AIが採点します（10点満点、6点以上で正解）
+  - generic [ref=e157]:
+    - text: "問題数を選択:"
+    - combobox [ref=e158]:
+      - option "10問" [selected]
+      - option "15問"
+      - option "20問"
+      - option "25問"
+      - option "30問"
+  - button "クイズ開始" [ref=e159]

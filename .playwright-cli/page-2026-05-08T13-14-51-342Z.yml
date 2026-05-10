@@ -1,0 +1,129 @@
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - img "Google" [ref=e10]
+        - generic [ref=e11]: Sign in with Google
+      - img [ref=e12]
+    - generic [ref=e13]:
+      - generic [ref=e15]:
+        - heading "Sign in" [level=1] [ref=e16]
+        - paragraph [ref=e17]:
+          - text: to continue to
+          - button "Stripe" [ref=e18] [cursor=pointer]
+      - generic [ref=e19]:
+        - generic [ref=e22]:
+          - generic [ref=e27]:
+            - textbox "Email or phone" [active] [ref=e28]
+            - generic:
+              - generic: Email or phone
+          - paragraph [ref=e29]:
+            - link "Forgot email?" [ref=e30] [cursor=pointer]:
+              - /url: /signin/v2/usernamerecovery?access_type=offline&app_domain=https://dashboard.stripe.com&client_id=76947576630-mmnmnaikmn72ov4fc6imrtoo5pnqj5jp.apps.googleusercontent.com&code_challenge=vSEFklxb5kwKb6PpY9GGhIzH9NqaLl7I0WOIMVsCxbs&code_challenge_method=S256&continue=https://accounts.google.com/signin/oauth/legacy/consent?authuser%3Dunknown%26part%3DAJi8hAOdr3yvUjCZW0eF8922q3V1usWkLu6Sq55Eb0bkBFpFBk1SNbObpZnmgMTYlbSLZD-MTpXvgPJJIXVZHHoguttTHSxDV07YW9jBycWL0ndf1QBLAx6CiwsO9K7PHc-JPIxv4b4EooNt2hm-VBQavIpMZIzfVVqYYlOuWT-QiaWiC5Rqfl9hv-2W2Fj_CWxdsnr4eEGiKjX1082jc76TIACHshLevgAYAhlt9s6jJWE77J6gIbNvExCDdWU4wExWp6nKNavQRAPCdYkdYXiK_fhIiwrrmNBio7WndqWVZ0h0Or4aOKjm_AtQnlEGsfc6xuaVLf8MJWmOE0bnwj4B-YfEoa7NjzdU8gZvakTnXSoIti75wTOtdbzAK3zRH9spPbKocOjptj9TU-n5sXgz__QM5qBaWaQ27m7qbHIhOz2gflUOcwhQonww1hrBhD2Am183nfM0JITSt93EPKcyt3NS_Emf4g%26flowName%3DGeneralOAuthFlow%26as%3DS2115701025%253A1778246089326022%26client_id%3D76947576630-mmnmnaikmn72ov4fc6imrtoo5pnqj5jp.apps.googleusercontent.com%23&dsh=S2115701025:1778246089326022&flowName=GeneralOAuthLite&o2v=2&opparams=%253F&prompt=consent&rart=ANgoxcfAP8wd-2MRodQ-_3czhWg6czxt9SoKQF4OeH8EMI9IJ_xwnMMMC2L0_EmBZxVxZKTm8OP9SaXvDCCG8kNdY_TO4tJrhjeFi5ksEV4wbQh0Jkya_2U&redirect_uri=https://dashboard.stripe.com/login/oauth/google/callback&response_type=code&scope=openid+email+profile&service=lso&state=merchant%3D;source%3Dmain_login;has_platform_authenticator%3Dfalse;io_blackbox%3D0400JapG4txqVP4Nf94lis1ztpwBRqjzGjeHc8cuWfc1lkjHuPXzNXzFq8MatmJ8q01ND2MrzOwD3v1SInpRYxSxo9Sm1I42%252F9tVmV4o8x2zV06DL3VrZiYBBsWDK0uYkCSnFpGdpVdVZ9NIwoY8ye2u0nVLKa5eUqvJ5dzgojLfFGuxbdvTZvRNMDAkQMZGhjYcqybr2nRRJZx%252B5Io%252Bnt%252F5cgo5VNMvaDXfqXMENLipH4gaMVoueGgVipKxFo8psNwgsBx6w1tx0mMZz7HtmSQrKuHt39bvxE86eVaYJEF00M0hh7EOAVblYVmKy85%252F1LtDaUFmCq4move%252F4PoTXuhr9FU8NguKENqeSipYNscDiy7T7W%252Bbd9sPiiIaglU07ahTPl2NxTjv7NQQQ4427UQH%252BvRCixYixvhbvsed8hpSW9o8RI0lXY580vPfBp8j9ZgcSxMKzZMpFJQHzrT9i0BebNGEup0jWpyFpiIn%252F4g7jAnC1AevYOBPe8UvRkxkPz1xPGsqpmVl2tnAqvQx%252F6iBZrcX%252BxWL1xsAPFsUnml5xWkRYDL1zZNss9T16TeM5diEHf7WUtiodkSxfdwTp9yCESQ2KERfUVuDtSVPrbgATwjTkCaXjwRvdlmKy85%252F1LtD7BFQVjvF0CKqWvTbz%252Fc%252Br%252Bup12NPW1HF%252Fu7OlmNu3PnvC2NUlS%252Fp4ZL6XmBGHnEzmAfK3q8mseCOWJrt%252BxB3I3rhgCEbsnC9%252FH8neKkenzpHQnH%252Fl0ey3BKePA1UZdKAZDwic%252By5%252Fr%252BSkyAbziDM7k8xAXTS4l7DT0T3rBeGtQZaKsLXKbBxQbr3%252Fo5bzPz954xxh0P2kPtMyPpjzYuuV%252BVhT2JQxvTdC24eZzo97tw16kQoiglK7BJDLfM%252FX8TvBZEph1nGneOS%252Bl5gRh5xMwBs2slzAHmN%252BZ4baa9a0Da8VDdLGBfK9PH%252FLgnAtMTg%252Fgz07uVSINAgzJ8FJa%252F%252B%252B4oJ7bMwFkySJWgyfkQjMC3P7WvNzN%252BCBAyk4VT9YQMgkKrB%252BoTIGfcdEfb0TY%252BXry83Rel4W1HHFFAN6Q1x80UdCdGdyqwwbTKdeSg4P%252BujHRH29E2Pl68vN0XpeFtRxxRQDekNcfNFHQnRncqsMG0ynXkoOD%252Frox0R9vRNj5evLzdF6XhbUcd9xD6KYGuP2dOGA%252FFTZGQo7kZxOYuV%252F8fE4IKIyErnlw9x5pAWMIZF6GH7RmzLnoM%253D;login_flow%3Dlogin;search_params%3D
+        - paragraph [ref=e33]:
+          - text: Before using this app, you can review Stripe’s
+          - link "Privacy Policy" [ref=e34] [cursor=pointer]:
+            - /url: https://stripe.com/privacy
+          - text: and
+          - link "Terms of Service" [ref=e35] [cursor=pointer]:
+            - /url: https://stripe.com/legal/ssa
+          - text: .
+        - generic [ref=e37]:
+          - button "Next" [ref=e39]
+          - link "Create account" [ref=e41] [cursor=pointer]:
+            - /url: /lifecycle/flows/signup?access_type=offline&app_domain=https://dashboard.stripe.com&client_id=76947576630-mmnmnaikmn72ov4fc6imrtoo5pnqj5jp.apps.googleusercontent.com&code_challenge=vSEFklxb5kwKb6PpY9GGhIzH9NqaLl7I0WOIMVsCxbs&code_challenge_method=S256&continue=https://accounts.google.com/signin/oauth/legacy/consent?authuser%3Dunknown%26part%3DAJi8hAOdr3yvUjCZW0eF8922q3V1usWkLu6Sq55Eb0bkBFpFBk1SNbObpZnmgMTYlbSLZD-MTpXvgPJJIXVZHHoguttTHSxDV07YW9jBycWL0ndf1QBLAx6CiwsO9K7PHc-JPIxv4b4EooNt2hm-VBQavIpMZIzfVVqYYlOuWT-QiaWiC5Rqfl9hv-2W2Fj_CWxdsnr4eEGiKjX1082jc76TIACHshLevgAYAhlt9s6jJWE77J6gIbNvExCDdWU4wExWp6nKNavQRAPCdYkdYXiK_fhIiwrrmNBio7WndqWVZ0h0Or4aOKjm_AtQnlEGsfc6xuaVLf8MJWmOE0bnwj4B-YfEoa7NjzdU8gZvakTnXSoIti75wTOtdbzAK3zRH9spPbKocOjptj9TU-n5sXgz__QM5qBaWaQ27m7qbHIhOz2gflUOcwhQonww1hrBhD2Am183nfM0JITSt93EPKcyt3NS_Emf4g%26flowName%3DGeneralOAuthFlow%26as%3DS2115701025%253A1778246089326022%26client_id%3D76947576630-mmnmnaikmn72ov4fc6imrtoo5pnqj5jp.apps.googleusercontent.com%23&dsh=S2115701025:1778246089326022&flowEntry=SignUp&flowName=GlifWebSignIn&o2v=2&opparams=%253F&prompt=consent&rart=ANgoxcfAP8wd-2MRodQ-_3czhWg6czxt9SoKQF4OeH8EMI9IJ_xwnMMMC2L0_EmBZxVxZKTm8OP9SaXvDCCG8kNdY_TO4tJrhjeFi5ksEV4wbQh0Jkya_2U&redirect_uri=https://dashboard.stripe.com/login/oauth/google/callback&response_type=code&scope=openid+email+profile&service=lso&signInUrl=https://accounts.google.com/signin/oauth?access_type%3Doffline%26app_domain%3Dhttps://dashboard.stripe.com%26client_id%3D76947576630-mmnmnaikmn72ov4fc6imrtoo5pnqj5jp.apps.googleusercontent.com%26code_challenge%3DvSEFklxb5kwKb6PpY9GGhIzH9NqaLl7I0WOIMVsCxbs%26code_challenge_method%3DS256%26continue%3Dhttps://accounts.google.com/signin/oauth/legacy/consent?authuser%253Dunknown%2526part%253DAJi8hAOdr3yvUjCZW0eF8922q3V1usWkLu6Sq55Eb0bkBFpFBk1SNbObpZnmgMTYlbSLZD-MTpXvgPJJIXVZHHoguttTHSxDV07YW9jBycWL0ndf1QBLAx6CiwsO9K7PHc-JPIxv4b4EooNt2hm-VBQavIpMZIzfVVqYYlOuWT-QiaWiC5Rqfl9hv-2W2Fj_CWxdsnr4eEGiKjX1082jc76TIACHshLevgAYAhlt9s6jJWE77J6gIbNvExCDdWU4wExWp6nKNavQRAPCdYkdYXiK_fhIiwrrmNBio7WndqWVZ0h0Or4aOKjm_AtQnlEGsfc6xuaVLf8MJWmOE0bnwj4B-YfEoa7NjzdU8gZvakTnXSoIti75wTOtdbzAK3zRH9spPbKocOjptj9TU-n5sXgz__QM5qBaWaQ27m7qbHIhOz2gflUOcwhQonww1hrBhD2Am183nfM0JITSt93EPKcyt3NS_Emf4g%2526flowName%253DGeneralOAuthFlow%2526as%253DS2115701025%25253A1778246089326022%2526client_id%253D76947576630-mmnmnaikmn72ov4fc6imrtoo5pnqj5jp.apps.googleusercontent.com%2523%26dsh%3DS2115701025:1778246089326022%26flowName%3DGeneralOAuthLite%26o2v%3D2%26opparams%3D%25253F%26prompt%3Dconsent%26rart%3DANgoxcfAP8wd-2MRodQ-_3czhWg6czxt9SoKQF4OeH8EMI9IJ_xwnMMMC2L0_EmBZxVxZKTm8OP9SaXvDCCG8kNdY_TO4tJrhjeFi5ksEV4wbQh0Jkya_2U%26redirect_uri%3Dhttps://dashboard.stripe.com/login/oauth/google/callback%26response_type%3Dcode%26scope%3Dopenid%2Bemail%2Bprofile%26service%3Dlso%26state%3Dmerchant%253D;source%253Dmain_login;has_platform_authenticator%253Dfalse;io_blackbox%253D0400JapG4txqVP4Nf94lis1ztpwBRqjzGjeHc8cuWfc1lkjHuPXzNXzFq8MatmJ8q01ND2MrzOwD3v1SInpRYxSxo9Sm1I42%25252F9tVmV4o8x2zV06DL3VrZiYBBsWDK0uYkCSnFpGdpVdVZ9NIwoY8ye2u0nVLKa5eUqvJ5dzgojLfFGuxbdvTZvRNMDAkQMZGhjYcqybr2nRRJZx%25252B5Io%25252Bnt%25252F5cgo5VNMvaDXfqXMENLipH4gaMVoueGgVipKxFo8psNwgsBx6w1tx0mMZz7HtmSQrKuHt39bvxE86eVaYJEF00M0hh7EOAVblYVmKy85%25252F1LtDaUFmCq4move%25252F4PoTXuhr9FU8NguKENqeSipYNscDiy7T7W%25252Bbd9sPiiIaglU07ahTPl2NxTjv7NQQQ4427UQH%25252BvRCixYixvhbvsed8hpSW9o8RI0lXY580vPfBp8j9ZgcSxMKzZMpFJQHzrT9i0BebNGEup0jWpyFpiIn%25252F4g7jAnC1AevYOBPe8UvRkxkPz1xPGsqpmVl2tnAqvQx%25252F6iBZrcX%25252BxWL1xsAPFsUnml5xWkRYDL1zZNss9T16TeM5diEHf7WUtiodkSxfdwTp9yCESQ2KERfUVuDtSVPrbgATwjTkCaXjwRvdlmKy85%25252F1LtD7BFQVjvF0CKqWvTbz%25252Fc%25252Br%25252Bup12NPW1HF%25252Fu7OlmNu3PnvC2NUlS%25252Fp4ZL6XmBGHnEzmAfK3q8mseCOWJrt%25252BxB3I3rhgCEbsnC9%25252FH8neKkenzpHQnH%25252Fl0ey3BKePA1UZdKAZDwic%25252By5%25252Fr%25252BSkyAbziDM7k8xAXTS4l7DT0T3rBeGtQZaKsLXKbBxQbr3%25252Fo5bzPz954xxh0P2kPtMyPpjzYuuV%25252BVhT2JQxvTdC24eZzo97tw16kQoiglK7BJDLfM%25252FX8TvBZEph1nGneOS%25252Bl5gRh5xMwBs2slzAHmN%25252BZ4baa9a0Da8VDdLGBfK9PH%25252FLgnAtMTg%25252Fgz07uVSINAgzJ8FJa%25252F%25252B%25252B4oJ7bMwFkySJWgyfkQjMC3P7WvNzN%25252BCBAyk4VT9YQMgkKrB%25252BoTIGfcdEfb0TY%25252BXry83Rel4W1HHFFAN6Q1x80UdCdGdyqwwbTKdeSg4P%25252BujHRH29E2Pl68vN0XpeFtRxxRQDekNcfNFHQnRncqsMG0ynXkoOD%25252Frox0R9vRNj5evLzdF6XhbUcd9xD6KYGuP2dOGA%25252FFTZGQo7kZxOYuV%25252F8fE4IKIyErnlw9x5pAWMIZF6GH7RmzLnoM%25253D;login_flow%253Dlogin;search_params%253D&state=merchant%3D;source%3Dmain_login;has_platform_authenticator%3Dfalse;io_blackbox%3D0400JapG4txqVP4Nf94lis1ztpwBRqjzGjeHc8cuWfc1lkjHuPXzNXzFq8MatmJ8q01ND2MrzOwD3v1SInpRYxSxo9Sm1I42%252F9tVmV4o8x2zV06DL3VrZiYBBsWDK0uYkCSnFpGdpVdVZ9NIwoY8ye2u0nVLKa5eUqvJ5dzgojLfFGuxbdvTZvRNMDAkQMZGhjYcqybr2nRRJZx%252B5Io%252Bnt%252F5cgo5VNMvaDXfqXMENLipH4gaMVoueGgVipKxFo8psNwgsBx6w1tx0mMZz7HtmSQrKuHt39bvxE86eVaYJEF00M0hh7EOAVblYVmKy85%252F1LtDaUFmCq4move%252F4PoTXuhr9FU8NguKENqeSipYNscDiy7T7W%252Bbd9sPiiIaglU07ahTPl2NxTjv7NQQQ4427UQH%252BvRCixYixvhbvsed8hpSW9o8RI0lXY580vPfBp8j9ZgcSxMKzZMpFJQHzrT9i0BebNGEup0jWpyFpiIn%252F4g7jAnC1AevYOBPe8UvRkxkPz1xPGsqpmVl2tnAqvQx%252F6iBZrcX%252BxWL1xsAPFsUnml5xWkRYDL1zZNss9T16TeM5diEHf7WUtiodkSxfdwTp9yCESQ2KERfUVuDtSVPrbgATwjTkCaXjwRvdlmKy85%252F1LtD7BFQVjvF0CKqWvTbz%252Fc%252Br%252Bup12NPW1HF%252Fu7OlmNu3PnvC2NUlS%252Fp4ZL6XmBGHnEzmAfK3q8mseCOWJrt%252BxB3I3rhgCEbsnC9%252FH8neKkenzpHQnH%252Fl0ey3BKePA1UZdKAZDwic%252By5%252Fr%252BSkyAbziDM7k8xAXTS4l7DT0T3rBeGtQZaKsLXKbBxQbr3%252Fo5bzPz954xxh0P2kPtMyPpjzYuuV%252BVhT2JQxvTdC24eZzo97tw16kQoiglK7BJDLfM%252FX8TvBZEph1nGneOS%252Bl5gRh5xMwBs2slzAHmN%252BZ4baa9a0Da8VDdLGBfK9PH%252FLgnAtMTg%252Fgz07uVSINAgzJ8FJa%252F%252B%252B4oJ7bMwFkySJWgyfkQjMC3P7WvNzN%252BCBAyk4VT9YQMgkKrB%252BoTIGfcdEfb0TY%252BXry83Rel4W1HHFFAN6Q1x80UdCdGdyqwwbTKdeSg4P%252BujHRH29E2Pl68vN0XpeFtRxxRQDekNcfNFHQnRncqsMG0ynXkoOD%252Frox0R9vRNj5evLzdF6XhbUcd9xD6KYGuP2dOGA%252FFTZGQo7kZxOYuV%252F8fE4IKIyErnlw9x5pAWMIZF6GH7RmzLnoM%253D;login_flow%3Dlogin;search_params%3D
+  - contentinfo [ref=e42]:
+    - combobox [ref=e45] [cursor=pointer]:
+      - option "Afrikaans"
+      - option "azərbaycan"
+      - option "bosanski"
+      - option "català"
+      - option "Čeština"
+      - option "Cymraeg"
+      - option "Dansk"
+      - option "Deutsch"
+      - option "eesti"
+      - option "English (United Kingdom)"
+      - option "English (United States)" [selected]
+      - option "Español (España)"
+      - option "Español (Latinoamérica)"
+      - option "euskara"
+      - option "Filipino"
+      - option "Français (Canada)"
+      - option "Français (France)"
+      - option "Gaeilge"
+      - option "galego"
+      - option "Hrvatski"
+      - option "Indonesia"
+      - option "isiZulu"
+      - option "íslenska"
+      - option "Italiano"
+      - option "Kiswahili"
+      - option "latviešu"
+      - option "lietuvių"
+      - option "magyar"
+      - option "Melayu"
+      - option "Nederlands"
+      - option "norsk"
+      - option "o‘zbek"
+      - option "polski"
+      - option "Português (Brasil)"
+      - option "Português (Portugal)"
+      - option "română"
+      - option "shqip"
+      - option "Slovenčina"
+      - option "slovenščina"
+      - option "srpski (latinica)"
+      - option "Suomi"
+      - option "Svenska"
+      - option "Tiếng Việt"
+      - option "Türkçe"
+      - option "Ελληνικά"
+      - option "беларуская"
+      - option "български"
+      - option "кыргызча"
+      - option "қазақ тілі"
+      - option "македонски"
+      - option "монгол"
+      - option "Русский"
+      - option "српски (ћирилица)"
+      - option "Українська"
+      - option "ქართული"
+      - option "հայերեն"
+      - option "‫עברית‬‎"
+      - option "‫اردو‬‎"
+      - option "‫العربية‬‎"
+      - option "‫فارسی‬‎"
+      - option "አማርኛ"
+      - option "नेपाली"
+      - option "मराठी"
+      - option "हिन्दी"
+      - option "অসমীয়া"
+      - option "বাংলা"
+      - option "ਪੰਜਾਬੀ"
+      - option "ગુજરાતી"
+      - option "ଓଡ଼ିଆ"
+      - option "தமிழ்"
+      - option "తెలుగు"
+      - option "ಕನ್ನಡ"
+      - option "മലയാളം"
+      - option "සිංහල"
+      - option "ไทย"
+      - option "ລາວ"
+      - option "မြန်မာ"
+      - option "ខ្មែរ"
+      - option "한국어"
+      - option "中文（香港）"
+      - option "日本語"
+      - option "简体中文"
+      - option "繁體中文"
+    - list [ref=e46]:
+      - listitem [ref=e47]:
+        - link "Help" [ref=e48] [cursor=pointer]:
+          - /url: https://support.google.com/accounts?hl=en-US&p=account_iph
+      - listitem [ref=e49]:
+        - link "Privacy" [ref=e50] [cursor=pointer]:
+          - /url: https://accounts.google.com/TOS?loc=JP&hl=en-US&privacy=true
+      - listitem [ref=e51]:
+        - link "Terms" [ref=e52] [cursor=pointer]:
+          - /url: https://accounts.google.com/TOS?loc=JP&hl=en-US
